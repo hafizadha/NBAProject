@@ -1,0 +1,26 @@
+<resources>
+    <string name="app_name">Nba Manager</string>
+
+    <string name="account_balance">Account Balance</string>
+    <string name="balance_currency">$</string>
+    <string name="balance_amount">524.99</string>
+
+    <string-array name="ld_activityScreenTitles">
+        <item>Market</item>
+        <item>Active</item>
+        <item>Injury</item>
+        <item>Contract</item>
+        <item>Journey</item>
+    </string-array>
+
+    <array name="ld_activityScreenIcons">
+        <item>@drawable/baseline_shopping_basket_24</item>
+        <item>@drawable/ic_email_outline_grey600_24dp</item>
+        <item>@drawable/ic_cart_outline_grey600_24dp</item>
+        <item>@drawable/baseline_alt_route_24</item>
+        <item>@drawable/baseline_alt_route_24</item>
+    </array>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+</resources>

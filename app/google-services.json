@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "800869232008",
+    "firebase_url": "https://nba-gmanager-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "nba-gmanager",
+    "storage_bucket": "nba-gmanager.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:800869232008:android:58a490af44aeb6f46b5e3d",
+        "android_client_info": {
+          "package_name": "com.example.NBAProject"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAiLEgeJNknHl4MhUEGgoChBHJi7rqvyXU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
