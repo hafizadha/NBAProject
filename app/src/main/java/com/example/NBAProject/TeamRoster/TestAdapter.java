@@ -116,6 +116,10 @@ public class TestAdapter extends RecyclerView.Adapter<TestAdapter.MyViewHolder> 
                 .setView(dialogView)
                 .create();
 
+        Long balance = rosterManager.getCurrentSalary();
+        TextView showbalance = dialogView.findViewById(R.id.showbalance);
+        showbalance.setText("Balance: " + balance);
+
         Button cancelButton = dialogView.findViewById(R.id.cancelButton);
         Button confirmButton = dialogView.findViewById(R.id.confirmButton);
 

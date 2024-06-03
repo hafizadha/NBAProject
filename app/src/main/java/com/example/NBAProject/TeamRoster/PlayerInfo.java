@@ -122,15 +122,12 @@ public class PlayerInfo implements Parcelable, Serializable {
     public void setName(String name) {
         Name = name;
     }
-
     public String getAge() {
         return Age;
     }
-
     public void setAge(String age) {
         Age = age;
     }
-
     public String getAssist() {
         return Assist;
     }

@@ -11,14 +11,7 @@
     android:padding="5dp"
     android:layout_gravity="center">
 
-    <TextView
-        android:layout_width="30dp"
-        android:layout_height="30dp"
-        android:textColor="@color/white"
-        android:text="X"
-        android:layout_gravity="end"
-        android:gravity="center"
-        android:background="@drawable/playercard"/>
+
 
     <LinearLayout
         android:layout_width="match_parent"

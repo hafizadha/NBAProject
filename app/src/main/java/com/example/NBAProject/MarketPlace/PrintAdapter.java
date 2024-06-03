@@ -48,9 +48,6 @@ public class PrintAdapter extends RecyclerView.Adapter<PrintAdapter.MyViewHolder
 
         holder.name.setText(playerInfo.getName());
         holder.pos.setText("Position:" + playerInfo.getPOS());
-
-
-
         String imageURL = playerInfo.getPhoto();
         Log.d("Image URL", "URL: " + imageURL);
 

@@ -69,7 +69,7 @@
                 android:fontFamily="@font/montreg"
                 android:textColor="@color/black"
                 android:textSize="13dp"
-                android:layout_marginTop="1dp"
+                android:layout_marginTop="2dp"
                 android:layout_marginLeft="10dp">
 
             </TextView>
@@ -81,7 +81,7 @@
                 android:fontFamily="@font/montreg"
                 android:layout_marginLeft="10dp"
                 android:textSize="13dp"
-                android:layout_marginTop="1dp"
+                android:layout_marginTop="2dp"
                 android:id="@+id/PositionTV">
 
             </TextView>
@@ -93,7 +93,7 @@
                 android:textColor="@color/black"
                 android:layout_marginLeft="10dp"
                 android:textSize="13dp"
-                android:layout_marginTop="1dp"
+                android:layout_marginTop="2dp"
                 android:id="@+id/SalaryTV">
 
             </TextView>
@@ -101,7 +101,7 @@
         </LinearLayout>
 
         <LinearLayout
-            android:layout_marginTop="92px"
+            android:layout_marginTop="29dp"
             android:layout_width="120dp"
             android:layout_height="120dp"
             android:orientation="vertical">"
@@ -123,7 +123,7 @@
                 android:layout_width="match_parent"
                 android:fontFamily="@font/montreg"
                 android:textSize="13dp"
-                android:layout_marginTop="1dp"
+                android:layout_marginTop="2dp"
                 android:layout_height="wrap_content"
                 android:textColor="@color/black">
 
@@ -135,7 +135,7 @@
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/montreg"
                 android:textSize="13dp"
-                android:layout_marginTop="1dp"
+                android:layout_marginTop="2dp"
                 android:textColor="@color/black">
 
             </TextView>
@@ -145,7 +145,7 @@
                 android:layout_width="match_parent"
                 android:fontFamily="@font/montreg"
                 android:textSize="13dp"
-                android:layout_marginTop="1dp"
+                android:layout_marginTop="2dp"
                 android:layout_height="wrap_content"
                 android:textColor="@color/black">
 

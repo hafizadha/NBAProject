@@ -22,6 +22,7 @@ import com.example.NBAProject.MarketPlace.MarketPage;
 import com.example.NBAProject.Sidebar.DrawerAdapter;
 import com.example.NBAProject.Sidebar.DrawerItem;
 import com.example.NBAProject.Sidebar.SimpleItem;
+import com.example.NBAProject.Sidebar.SpaceItem;
 import com.example.NBAProject.TeamRoster.Roster;
 import com.yarolegovich.slidingrootnav.SlidingRootNav;
 import com.yarolegovich.slidingrootnav.SlidingRootNavBuilder;
@@ -33,8 +34,7 @@ public class NavigationBar extends AppCompatActivity implements DrawerAdapter.On
 
     private final int POS_Market = 0;
     private final int POS_Team = 1;
-    private final int POS_Ranking = 2;
-    private final int POS_Journey = 3;
+    private final int POS_Journey = 2;
 
     private String[] screenTitles;
     private Drawable[] screenIcons;
@@ -70,8 +70,8 @@ public class NavigationBar extends AppCompatActivity implements DrawerAdapter.On
         DrawerAdapter adapter = new DrawerAdapter(Arrays.asList(
                 createItemFor(POS_Market).setChecked(true),
                 createItemFor(POS_Team),
-                createItemFor(POS_Ranking),
-                createItemFor(POS_Journey)));
+                createItemFor(POS_Journey)
+                ));
         adapter.setListener(this);
 
         RecyclerView list = findViewById(R.id.list);
@@ -99,9 +99,6 @@ public class NavigationBar extends AppCompatActivity implements DrawerAdapter.On
             // Set the text value of the TextView
             PageTitle.setText("Team Roster");
             showFragment(fragment);
-        }
-        else if(position == POS_Ranking){
-
         }
         else if(position == POS_Journey){
             MapFragment fragment = new MapFragment();

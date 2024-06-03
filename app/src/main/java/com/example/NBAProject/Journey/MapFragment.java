@@ -63,7 +63,6 @@ public class MapFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-
         databaseReference = FirebaseDatabase.getInstance().getReference().child("team");
         databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
@@ -93,16 +92,13 @@ public class MapFragment extends Fragment {
             public void onCancelled(@android.support.annotation.NonNull DatabaseError error) {
                 Toast.makeText(getActivity(), "Error: " + error.getMessage(), Toast.LENGTH_SHORT).show();
             }
-
         });
 
         // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.mapbox, container, false);
         geocoder = new Geocoder(getActivity());
 
-
         SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
-
         mapFragment.getMapAsync(new OnMapReadyCallback() {
             @Override
             public void onMapReady(@NonNull GoogleMap googleMap) {
@@ -163,6 +159,7 @@ public class MapFragment extends Fragment {
 
             }
         });
+
 
 
         toRoute = view.findViewById(R.id.journey);
@@ -258,10 +255,6 @@ public class MapFragment extends Fragment {
         mDialog.show();
     }
 
-    private void loadfromDatabase() {
-
-
-    }
 
 }
 

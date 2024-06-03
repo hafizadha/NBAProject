@@ -11,11 +11,9 @@ package com.example.NBAProject.Journey.Graph;
 public class NBAGraph {
     
     private WeightedGraph nbamap;
-    
     public NBAGraph(){
         this.nbamap = new WeightedGraph();
-        
-        
+
         Vertex Spurs = nbamap.addVertex("SAS");
         Vertex Warriors = nbamap.addVertex("GSW");
         Vertex Celtics = nbamap.addVertex("BC");
