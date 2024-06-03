@@ -1,29 +1,31 @@
-package com.example.NBAProject;
-
+package com.example.NBAProject.MarketPlace;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
 
-import androidx.appcompat.app.AppCompatActivity;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 
-public class AdvancedSearching extends AppCompatActivity {
+import com.example.NBAProject.R;
 
-    ImageView buttonFilter;
-
+public class AdvancedSearch extends Fragment {
+    @Nullable
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_filter_search);
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.searchpage, container, false);
 
         // Get references to the EditText fields
-        EditText editTextHeight = findViewById(R.id.editTextHeight);
-        EditText editTextWeight = findViewById(R.id.editTextWeight);
-        EditText editTextPosition = findViewById(R.id.editTextPosition);
-        EditText editTextSalary = findViewById(R.id.editTextSalary);
-        ImageView buttonFilter = findViewById(R.id.buttonFilter);
+        EditText editTextHeight = view.findViewById(R.id.editTextHeight);
+        EditText editTextWeight = view.findViewById(R.id.editTextWeight);
+        EditText editTextPosition = view.findViewById(R.id.editTextPosition);
+        EditText editTextSalary = view.findViewById(R.id.editTextSalary);
+        ImageView buttonFilter = view.findViewById(R.id.buttonFilter);
 
         buttonFilter.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -48,10 +50,6 @@ public class AdvancedSearching extends AppCompatActivity {
                 bundle.putInt("minW",minWeight);
                 bundle.putInt("minSalary",minSalary);
 
-
-
-
-
                 // Pass position only if provided
                 if (!positionInput.isEmpty()) {
                     bundle.putString("pos",positionInput);
@@ -59,13 +57,16 @@ public class AdvancedSearching extends AppCompatActivity {
                 mp.setArguments(bundle);
 
                 // Add the fragment to the activity
-                getSupportFragmentManager().beginTransaction()
+                getParentFragmentManager().beginTransaction()
                         .replace(R.id.container, mp)
                         .commit();
             }
         });
 
+        return view;
 
     }
+
+
 }
 

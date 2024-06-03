@@ -2,11 +2,11 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main"
+    android:id="@+id/container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MarketPage"
-    android:background="@color/NBAblue">
+    tools:context=".MarketPlace.MarketPage"
+    android:background="@color/white">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -26,7 +26,8 @@
                 android:layout_marginTop="8dp"
                 android:layout_marginBottom="8dp"
                 android:layout_marginRight="3dp"
-                android:background="@drawable/searchviewbg"/>
+                android:background="@drawable/searchviewbg"
+                android:elevation="5dp"/>
 
 
             <ImageView

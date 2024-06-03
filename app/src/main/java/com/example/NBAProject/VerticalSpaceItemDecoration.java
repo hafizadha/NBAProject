@@ -3,6 +3,8 @@ package com.example.NBAProject;
 import android.graphics.Rect;
 import android.view.View;
 
+// Not RELEVANT TO TOPIC
+// Only to add spaces between layouts in a RecyclerView
 import androidx.recyclerview.widget.RecyclerView;
 
 public class VerticalSpaceItemDecoration extends RecyclerView.ItemDecoration {

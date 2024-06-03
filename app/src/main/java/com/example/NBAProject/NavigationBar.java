@@ -2,11 +2,13 @@ package com.example.NBAProject;
 
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.widget.TextView;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.ColorRes;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -15,9 +17,12 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.NBAProject.Journey.MapFragment;
+import com.example.NBAProject.MarketPlace.MarketPage;
 import com.example.NBAProject.Sidebar.DrawerAdapter;
 import com.example.NBAProject.Sidebar.DrawerItem;
 import com.example.NBAProject.Sidebar.SimpleItem;
+import com.example.NBAProject.TeamRoster.Roster;
 import com.yarolegovich.slidingrootnav.SlidingRootNav;
 import com.yarolegovich.slidingrootnav.SlidingRootNavBuilder;
 
@@ -25,11 +30,11 @@ import java.util.Arrays;
 
 public class NavigationBar extends AppCompatActivity implements DrawerAdapter.OnItemSelectedListener {
 
+
     private final int POS_Market = 0;
-    private final int POS_Active = 1;
-    private final int POS_Injury = 2;
-    private final int POS_Contract = 3;
-    private final int POS_Journey = 4;
+    private final int POS_Team = 1;
+    private final int POS_Ranking = 2;
+    private final int POS_Journey = 3;
 
     private String[] screenTitles;
     private Drawable[] screenIcons;
@@ -38,8 +43,15 @@ public class NavigationBar extends AppCompatActivity implements DrawerAdapter.On
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            getWindow().setStatusBarColor(getResources().getColor(R.color.black, this.getTheme()));
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            getWindow().setStatusBarColor(getResources().getColor(R.color.black));
+        }
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -57,9 +69,8 @@ public class NavigationBar extends AppCompatActivity implements DrawerAdapter.On
 
         DrawerAdapter adapter = new DrawerAdapter(Arrays.asList(
                 createItemFor(POS_Market).setChecked(true),
-                createItemFor(POS_Active),
-                createItemFor(POS_Injury),
-                createItemFor(POS_Contract),
+                createItemFor(POS_Team),
+                createItemFor(POS_Ranking),
                 createItemFor(POS_Journey)));
         adapter.setListener(this);
 
@@ -81,12 +92,23 @@ public class NavigationBar extends AppCompatActivity implements DrawerAdapter.On
             PageTitle.setText("MARKET");
             showFragment(fragment);
         }
-        else if(position == POS_Active){
-            PopUpView fragment = new PopUpView();
+        else if(position == POS_Team){
+            Roster fragment = new Roster();
             TextView PageTitle = findViewById(R.id.pagetitle);
 
             // Set the text value of the TextView
-            PageTitle.setText("ACTIVE");
+            PageTitle.setText("Team Roster");
+            showFragment(fragment);
+        }
+        else if(position == POS_Ranking){
+
+        }
+        else if(position == POS_Journey){
+            MapFragment fragment = new MapFragment();
+            TextView PageTitle = findViewById(R.id.pagetitle);
+
+            // Set the text value of the TextView
+            PageTitle.setText("Journey");
             showFragment(fragment);
         }
         slidingRootNav.closeMenu();
@@ -128,5 +150,10 @@ public class NavigationBar extends AppCompatActivity implements DrawerAdapter.On
     @ColorInt
     private int color(@ColorRes int res) {
         return ContextCompat.getColor(this, res);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
     }
 }

@@ -5,7 +5,7 @@
     android:id="@+id/main"
     android:layout_width="350dp"
     android:layout_height="300dp"
-    tools:context=".PopUpView"
+    tools:context=".MarketPlace.PopUpView"
     android:orientation="vertical"
     android:background="@color/blueDark"
     android:padding="5dp"
@@ -18,7 +18,7 @@
         android:text="X"
         android:layout_gravity="end"
         android:gravity="center"
-        android:background="@drawable/circlebackground"/>
+        android:background="@drawable/playercard"/>
 
     <LinearLayout
         android:layout_width="match_parent"

@@ -21,6 +21,8 @@
 
 
     <color name="orange">#e66e15</color>
-    <color name="NBAblue">#0000FF</color>
+    <color name="NBAblue">#17408B</color>
+    <color name="NBARed">#C9082A</color>
+    <color name="LightGray">#f0f0f0</color>
 
 </resources>

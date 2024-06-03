@@ -8,7 +8,7 @@ android {
 
     defaultConfig {
         applicationId "com.example.NBAProject"
-        minSdk 24
+        minSdk 33
         targetSdk 34
         versionCode 1
         versionName "1.0"
@@ -53,4 +53,10 @@ dependencies {
     annotationProcessor("com.github.bumptech.glide:compiler:4.15.1")
 
     implementation("com.squareup.picasso:picasso:2.71828")
+
+    implementation("com.google.code.gson:gson:2.11.0")
+    implementation("androidx.fragment:fragment:1.7.1")
+    implementation("com.google.android.gms:play-services-maps:18.2.0")
+
+
 }
