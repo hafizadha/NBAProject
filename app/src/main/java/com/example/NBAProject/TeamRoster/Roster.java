@@ -37,6 +37,7 @@ public class Roster extends Fragment {
     ArrayList<PlayerInfo> dataList;
     RosterManager rosterManager;
     SwipeRefreshLayout swipeRefreshLayout;
+    int Guards,Centers,Forwards;
 
     Context context;
 
@@ -47,7 +48,14 @@ public class Roster extends Fragment {
 
         context = getActivity();
 
-        rosterManager = RosterManager.getInstance();
+        fetchDataFromFirebase();
+
+        fetchCurrentSalaryFromFirebase();
+
+        dataList = new ArrayList<>();
+
+        rosterManager = RosterManager.getInstance(dataList.size());
+        Log.d("APA NI","WHAY TJE FUCK " + dataList.size());
 
         textView1 = view.findViewById(R.id.currentSalary);
         textView2 = view.findViewById(R.id.playerStatus);
@@ -61,12 +69,8 @@ public class Roster extends Fragment {
         swipeRefreshLayout = view.findViewById(R.id.container);
 
         // Fetch saved salary from Firebase
-        fetchCurrentSalaryFromFirebase();
 
         // Fetch data from Firebase
-        fetchDataFromFirebase();
-
-        dataList = new ArrayList<>();
 
         recyclerView = view.findViewById(R.id.teamList);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -113,10 +117,6 @@ public class Roster extends Fragment {
         AlertDialog dialog = new AlertDialog.Builder(context)
                 .setView(dialogView)
                 .create();
-
-        TextView totalplayer = dialogView.findViewById(R.id.totalPlayers);
-        int total = rosterManager.getCurrentPlayersfrom();
-        totalplayer.setText(String.valueOf(total));
 
         dialog.show();
     }
@@ -225,35 +225,34 @@ public class Roster extends Fragment {
 
 
     public void updatePositions() {
-        int guardsCnt = 0, forwardsCnt = 0, centersCnt = 0;
+        Guards = 0;Centers = 0;Forwards = 0;
 
         for (PlayerInfo player : dataList) {
             switch (player.getPOS()) {
                 case "SG":
                 case "PG":
-                    guardsCnt++;
+                    Guards++;
                     break;
                 case "SF":
                 case "PF":
-                    forwardsCnt++;
+                    Forwards++;
                     break;
                 default:
-                    centersCnt++;
+                    Centers++;
                     break;
             }
         }
-
-        guards.setText("Guards: " + guardsCnt);
-        forwards.setText("Forwards: " + forwardsCnt);
-        centers.setText("Centers: " + centersCnt);
+        guards.setText("Guards: " + Guards);
+        forwards.setText("Forwards: " + Forwards);
+        centers.setText("Centers: " + Centers);
 
         // Set text color for guards
-        guards.setTextColor(context.getResources().getColor(guardsCnt >= 2 ? R.color.green : R.color.black));
+        guards.setTextColor(context.getResources().getColor(Guards >= 2 ? R.color.green : R.color.black));
 
         // Set text color for forwards
-        forwards.setTextColor(context.getResources().getColor(forwardsCnt >= 2 ? R.color.green : R.color.black));
+        forwards.setTextColor(context.getResources().getColor(Forwards >= 2 ? R.color.green : R.color.black));
 
         // Set text color for centers
-        centers.setTextColor(context.getResources().getColor(centersCnt >= 2 ? R.color.green : R.color.black));
+        centers.setTextColor(context.getResources().getColor(Centers >= 2 ? R.color.green : R.color.black));
     }
 }

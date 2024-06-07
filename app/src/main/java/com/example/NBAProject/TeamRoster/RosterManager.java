@@ -29,7 +29,7 @@ public class RosterManager {
 
     FirebaseDatabase database;
 
-    public RosterManager() {
+    public RosterManager(int size) {
         this.roster = new ArrayList<>();
         this.injuryReserve = new Stack<>();
         this.contractExtensionQueue = new PriorityQueue<>();
@@ -43,17 +43,22 @@ public class RosterManager {
         //Get the balance from the Database
         getBalanceFromDatabase();
 
-        currentNumberOfPlayers = roster.size();
+        currentNumberOfPlayers = size;
+        Log.d("APA NI","X FHM + " + currentNumberOfPlayers);
+    }
+
+    public static RosterManager getInstance(int size) {
+        //For first time call (opening the app), the instance is null, thus a new RosterManager is instantiated
+        if (instance == null) {
+            instance = new RosterManager(size);
+        }
+        //For non-first time call, return the instance that have been created once.
+        return instance;
     }
 
     // This method is an implementation of the Singleton pattern (only a single instance of a class exists throughout an application)
     // Any classes can have access to same instance (all Java class can retrieve the same instance), thus preventing any confusion in passing data.
     public static RosterManager getInstance() {
-        //For first time call (opening the app), the instance is null, thus a new RosterManager is instantiated
-        if (instance == null) {
-            instance = new RosterManager();
-        }
-        //For non-first time call, return the instance that have been created once.
         return instance;
     }
 
@@ -61,6 +66,7 @@ public class RosterManager {
         if (!contains(player) && salaryPass(player.getSalary()) && !isFull()) {
             roster.add(player);
             balance -= player.getSalary();
+            currentNumberOfPlayers ++;
 
             saveRoster(); // Save updated roster to Firebase
             saveCurrentSalary();
@@ -75,6 +81,14 @@ public class RosterManager {
         return roster.contains(player);
     }
 
+    public boolean inInjury(PlayerInfo player) {
+        return injuryReserve.contains(player);
+    }
+
+    public boolean inContract(PlayerInfo player) {
+        return contractExtensionQueue.contains(player);
+    }
+
     public boolean isFull() {
         return currentNumberOfPlayers == MAX_PLAYERS;
     }
@@ -83,9 +97,16 @@ public class RosterManager {
         return salary <= balance;
     }
 
+
+
+
+
+
+
     public void removePlayerFromRoster(PlayerInfo player){
         if(!roster.isEmpty()){
             roster.remove(player);
+            currentNumberOfPlayers--;
             balance += player.getSalary();
             saveRoster(); // Save updated roster to Firebase
             saveCurrentSalary();
@@ -93,12 +114,11 @@ public class RosterManager {
         }
     }
 
+
+
     public boolean checkExistInjury(PlayerInfo player){
         return injuryReserve.contains(player);
     }
-
-
-
     public void addToInjuryReserve(PlayerInfo player, String injury) {
         if(!injuryReserve.contains(player)) {
             player.setInjuryDescription(injury);
@@ -147,6 +167,7 @@ public class RosterManager {
             rosterRef.child(playerName).setValue(player); // Use playerName as the key
         }
     }
+
 
     public void importInjury(){
         //Refers to the injuryReserve node from Database
@@ -202,7 +223,7 @@ public class RosterManager {
     }
     public void saveInjuryReserve(PlayerInfo player, boolean add) {
         DatabaseReference injury = FirebaseDatabase.getInstance().getReference("injuryReserve");
-        String playername = player.getName();
+        String playername = sanitizePlayerName(player.getName());
         player.setTimestamp(System.currentTimeMillis());
         if(add){
             injury.child(playername).setValue(player);
@@ -214,7 +235,7 @@ public class RosterManager {
 
     public void saveContractExtensionQueue(PlayerInfo player, boolean add) {
         DatabaseReference contract = FirebaseDatabase.getInstance().getReference("contractQueue");
-        String playername = player.getName();
+        String playername = sanitizePlayerName(player.getName());
         if(add){
             contract.child(playername).setValue(player);
         }

@@ -62,7 +62,7 @@ public class TestAdapter extends RecyclerView.Adapter<TestAdapter.MyViewHolder> 
     @NonNull
     @Override
     public TestAdapter.MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(context).inflate(R.layout.player,parent,false);
+        View v = LayoutInflater.from(context).inflate(R.layout.player2,parent,false);
         return new MyViewHolder(v);
     }
 
@@ -84,6 +84,20 @@ public class TestAdapter extends RecyclerView.Adapter<TestAdapter.MyViewHolder> 
 
         holder.name.setText(playerInfo.getName());
         holder.pos.setText("Position:" + playerInfo.getPOS());
+
+
+        boolean inInjury = rosterManager.getInjuryReserve().contains(playerInfo);
+        boolean inContract = rosterManager.getContractPlayers().contains(playerInfo);
+        if(inInjury && inContract){
+            holder.icon.setImageResource(R.drawable.ic_cart_outline_grey600_24dp);
+            holder.icon2.setImageResource(R.drawable.ic_account_outline_grey600_24dp);
+        }
+        else if (inInjury){
+            holder.icon.setImageResource(R.drawable.ic_cart_outline_grey600_24dp);
+        }
+        else if(rosterManager.getContractPlayers().contains(playerInfo)){
+            holder.icon.setImageResource(R.drawable.ic_account_outline_grey600_24dp);
+        }
 
 
         String imageURL = playerInfo.getPhoto();
@@ -132,9 +146,10 @@ public class TestAdapter extends RecyclerView.Adapter<TestAdapter.MyViewHolder> 
             @Override
             public void onClick(View view) {
                 PlayerInfo data = list.get(position);
+                boolean isFull = rosterManager.isFull();
                 boolean sufficient = rosterManager.salaryPass(data.getSalary());//Compares selected player's salary with the current balance
                 boolean added;
-                if(sufficient){ //If the player salary is less than or equal to // the balance
+                if(sufficient && ! isFull){ //If the player salary is less than or equal to // the balance
                     added = RosterManager.getInstance().addPlayer(data);//Return true if added into the roster
 
                     if(added){
@@ -159,7 +174,12 @@ public class TestAdapter extends RecyclerView.Adapter<TestAdapter.MyViewHolder> 
                         Toast.makeText(context,"Player is already in your team",Toast.LENGTH_SHORT).show();}
                 }
                 else{ //If insufficient balance, display error messages
-                    Toast.makeText(context,"Insufficient balance",Toast.LENGTH_SHORT).show();
+                    if(!sufficient){
+                        Toast.makeText(context,"Insufficient balance",Toast.LENGTH_SHORT).show();
+                    }else{
+                        Toast.makeText(context,"Team is full",Toast.LENGTH_SHORT).show();
+                    }
+
                 }
                 dialog.dismiss();
             }
@@ -194,24 +214,34 @@ public class TestAdapter extends RecyclerView.Adapter<TestAdapter.MyViewHolder> 
         remove.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //Get the specific PlayerInfo object that was clicked
-                PlayerInfo data = list.get(position);
-                String playerId = data.getName(); // Get the player ID
-                removePlayerFromFirebase1(playerId); // Pass the player ID to the method
 
-                //Remove from current roster and roster node in database
-                RosterManager.getInstance().removePlayerFromRoster(data);
+                boolean inInjury = rosterManager.getInjuryReserve().contains(data);
+                boolean inContract = rosterManager.getContractPlayers().contains(data);
+                if(inInjury){
+                    Toast.makeText(context,"You must treat this player first",Toast.LENGTH_SHORT).show();
+                }else if(inContract){
+                    Toast.makeText(context,"Solve this player's contract first",Toast.LENGTH_SHORT).show();
+                }
+                else {
+                    //Get the specific PlayerInfo object that was clicked
+                    PlayerInfo data = list.get(position);
+                    String playerId = data.getName(); // Get the player ID
+                    removePlayerFromFirebase1(playerId); // Pass the player ID to the method
 
-                //Remove from current Stack Reserve and injuryReserve node in database
-                RosterManager.getInstance().removeFromInjuryReserve(data);
+                    //Remove from current roster and roster node in database
+                    RosterManager.getInstance().removePlayerFromRoster(data);
 
-                //Remove from current Queue and contractQueue node in database
-                RosterManager.getInstance().removeFromContractExtensionQueue();
+                    //Remove from current Stack Reserve and injuryReserve node in database
+                    RosterManager.getInstance().removeFromInjuryReserve(data);
 
-                //Remove from the adapter and update the UI
-                list.remove(position); // Remove the item from the list
-                notifyDataSetChanged(); // Notify adapter about the item removal
-                dialog.dismiss();
+                    //Remove from current Queue and contractQueue node in database
+                    RosterManager.getInstance().removeFromContractExtensionQueue();
+
+                    //Remove from the adapter and update the UI
+                    list.remove(position); // Remove the item from the list
+                    notifyDataSetChanged(); // Notify adapter about the item removal
+                    dialog.dismiss();
+                }
 
             }
         });
@@ -224,10 +254,12 @@ public class TestAdapter extends RecyclerView.Adapter<TestAdapter.MyViewHolder> 
                 PlayerInfo data = list.get(position);
                 boolean checkExist = RosterManager.getInstance().checkExistInjury(data);
                 Log.d("EXIST","EXIST" + checkExist);
-                if(!checkExist)
-                    RosterManager.getInstance().addToInjuryReserve(data, "Injury Description");
-                // Save the player's injury status
+                if(!checkExist) {
 
+                    RosterManager.getInstance().addToInjuryReserve(data, "Injury Description");
+                    notifyDataSetChanged();
+                    // Save the player's injury status
+                }
                 dialog.dismiss();
             }
         });
@@ -238,7 +270,6 @@ public class TestAdapter extends RecyclerView.Adapter<TestAdapter.MyViewHolder> 
             public void onClick(View view) {
                 PlayerInfo data = list.get(position);
                 RosterManager.getInstance().addToContractExtensionQueue(data);
-
                 notifyDataSetChanged();
                 dialog.dismiss();
             }
@@ -278,11 +309,14 @@ public class TestAdapter extends RecyclerView.Adapter<TestAdapter.MyViewHolder> 
 
     public static class MyViewHolder extends RecyclerView.ViewHolder {
         //Components inside the player card's layout (player.xml)
-        ImageView profileImg;
+        ImageView profileImg,icon,icon2;
         TextView name,age,assist,height,pos,points,reb,salary,steal,weight,block;
 
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
+
+            icon = itemView.findViewById(R.id.statusicon);
+            icon2 = itemView.findViewById(R.id.statusicon2);
 
             profileImg = itemView.findViewById(R.id.profileImage);
             name = itemView.findViewById(R.id.playerNameTV);
