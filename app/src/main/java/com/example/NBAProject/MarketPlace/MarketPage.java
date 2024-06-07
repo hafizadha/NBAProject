@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -29,50 +30,42 @@ import java.util.ArrayList;
 
 public class MarketPage extends Fragment {
 
-    //Parameters from Advanced Searching
-    private static final int ARG_PARAM1 = 0;
-    private static final int ARG_PARAM2 = 0;
-    private static final int ARG_PARAM3 = 0;
-    private static final String ARG_PARAM4 = "param4";
+    //Parameters passed by Search Page
     private int minHeight;
     private int minWeight;
     private int minSalary;
     private String position;
+    private String heightoperand;
+    private String weightoperand;
+    private String salaryoperand;
 
 
-    //Components in the layout
+    //Components inside the layout
     RecyclerView recyclerView;
     SearchView searchbar;
     TestAdapter myadapter;
     View view;
     ImageView imageView;
+
     //list of all free agents
     ArrayList<PlayerInfo> list;
+
+    //Used to import data from Firestore database
     DatabaseReference databaseReference;
 
+    //Crucial in handling the team roster
     RosterManager rosterManager;
-
 
     public MarketPage() {
     }
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            minHeight = getArguments().getInt(String.valueOf("minH"));
-            minWeight = getArguments().getInt("minW");
-            minSalary = getArguments().getInt("minSalary");
-        }
-    }
-
+    //A Fragment lifecycle that displays the UI
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        //Setting to Marketplace layout
+        //Setting to Marketplace layout (marketpage.xml)
         this.view = inflater.inflate(R.layout.marketpage, container, false);
 
-        rosterManager = new RosterManager("Team Name","Team City",20000);
         //----------------------------------------------------------------------------------------
         //RecyclerView to display list of players
         recyclerView = (RecyclerView) view.findViewById(R.id.playerList);
@@ -81,26 +74,38 @@ public class MarketPage extends Fragment {
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
-        // Define the space between items
+        //Retrieve the rosterManager for adding mechanism
+        rosterManager = RosterManager.getInstance();
+
+        // Define the space between items in RecyclerView <Merely for recyclerview's design>
         int verticalSpace = 50; // 50 pixels of space
         VerticalSpaceItemDecoration itemDecoration = new VerticalSpaceItemDecoration(verticalSpace);
 
         // Add the item decoration to the RecyclerView
         recyclerView.addItemDecoration(itemDecoration);
 
-        list = new ArrayList<>();
+        list = new ArrayList<>(); //Generate new arraylist of players before loading them
 
-        Bundle bundle = getArguments();
-        boolean test = getArguments() == null;
-        Log.d("BETD","EDED" + test);
+        Bundle bundle = getArguments(); //Get data from the SearchPage
         if(getArguments() != null){
+            //Initialising instance variables by referencing unique keys set inside the SearchPage class
+            //Retrieve integer values ( the default values are 0 for each )
             minHeight = bundle.getInt("minH");
             minWeight = bundle.getInt("minW");
             minSalary = bundle.getInt("minSalary");
+
+            //Retrieve comparison symbols and strings ( can be null values if the user doesn't input anything )
             position = bundle.getString("pos");
+            heightoperand = bundle.getString("heightsym");
+            weightoperand = bundle.getString("weightsym");
+            salaryoperand = bundle.getString("salarysym");
+
         }
 
-        loadPlayerData(minHeight,minWeight,minSalary,position);
+        //Load data from database based on these parameters
+        loadPlayerData(position,heightoperand,weightoperand,salaryoperand);
+
+        //Adapters are for generating the components inside the Recycler view
         myadapter = new TestAdapter(getContext(), list,TestAdapter.MODE_PLAYER_LIST,rosterManager);
         recyclerView.setAdapter(myadapter);
 
@@ -108,7 +113,13 @@ public class MarketPage extends Fragment {
         //Search bar to search player's name
         searchbar = view.findViewById(R.id.searchView);
 
+        //Setting up color of text in the searchbar
+        EditText editText = searchbar.findViewById(androidx.appcompat.R.id.search_src_text);
+        editText.setTextColor(getResources().getColor(R.color.DarkerGray));
+
+        //Search bar activity (when user types on the searchbar)
         searchbar.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            //These
             @Override
             public boolean onQueryTextSubmit(String query) {
                 return false;
@@ -116,7 +127,7 @@ public class MarketPage extends Fragment {
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                Log.d("TEST", "DED" + newText);
+                //Each time the text change, this method is called
                 filterList(newText);
                 return true;
             }
@@ -129,7 +140,7 @@ public class MarketPage extends Fragment {
         imageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                AdvancedSearch as = new AdvancedSearch();
+                SearchPage as = new SearchPage();
                 getParentFragmentManager().beginTransaction()
                         .replace(R.id.container, as)
                         .commit();
@@ -141,31 +152,32 @@ public class MarketPage extends Fragment {
 
 
     private void filterList(String text) {
+        //Create a local ArrayList to be filled with filtered names
+        //So that it doesn't disturb the purity of instance list
         ArrayList<PlayerInfo> filteredList = new ArrayList<>();
         for (PlayerInfo item : list) {
+            //If player name matches with the text
             if (item.getName().toLowerCase().contains(text.toLowerCase())) {
                 filteredList.add(item);
-                Log.d("TEST", "DED" + item.getName());
             }
         }
 
         if (filteredList.isEmpty()) {
         } else {
+            //Send the list to adapter to display the filtered players
             myadapter.setFilteredList(filteredList);
         }
     }
 
-    private void loadPlayerData(int minHeight, int minWeight, int minSalary, String POS) {
+    //Load Player data based on the conditional parameters
+    private void loadPlayerData(String POS,String heightoperand,String weightoperand,String salaryoperand) {
         databaseReference = FirebaseDatabase.getInstance().getReference().child("players");
         databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 list.clear();
-                    Log.d("FirebaseData", "DataSnapshot content: " + dataSnapshot.toString());
 
                     for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                        Log.d("FirebaseData", "Snapshot: " + snapshot.toString());
-
                         // Initialize a new getName instance
                         PlayerInfo playerdetails = new PlayerInfo();
 
@@ -173,7 +185,7 @@ public class MarketPage extends Fragment {
                         String profilePhoto = snapshot.child("profilePhoto").getValue(String.class);
 
                         Integer height = snapshot.child("Height").getValue(Integer.class);
-                        Float weight = snapshot.child("Weight").getValue(Float.class);
+                        Integer weight = snapshot.child("Weight").getValue(Integer.class);
                         String age = snapshot.child("Age").getValue(String.class);
                         String points = snapshot.child("Points").getValue(String.class);
                         String assists = snapshot.child("Assist").getValue(String.class);
@@ -184,19 +196,56 @@ public class MarketPage extends Fragment {
                         String position = snapshot.child("POS").getValue(String.class);
                         String name = snapshot.child("Name").getValue(String.class);
 
-
+                        //Setting the matches to true, assuming the player matches the conditions
                         boolean matches = true;
 
-                        if (height < minHeight || weight < minWeight || salary < minSalary) {
-                            matches = false; // If any of these are below the filter, it's not a match
-                        }
+                        //If the user inputs comparison operators into at least one of the 3 condition
+                        if(heightoperand != null || weightoperand != null || salaryoperand != null){
 
+                            //Check which attributes need to be considered
+                            //If there are no consideration, it is set to false
+                            boolean heightcon = heightoperand != null;
+                            boolean weightcon = weightoperand != null;
+                            boolean salarycon = salaryoperand != null;
+
+                            if(heightcon && weightcon && salarycon){
+                                //Check the condition for each attributes
+                                boolean match1 = checkComparision(heightoperand,height,minHeight);
+                                boolean match2 = checkComparision(weightoperand,weight,minWeight);
+                                boolean match3 = checkComparision(salaryoperand,salary,minSalary);
+                                //If  any of the attributes do not match
+                                if(!match1 || !match2 || !match3){
+                                    matches = false;
+                                }
+                            }
+                            //Height attributes are not considered
+                            else if(!heightcon){
+                                //Check the condition of the other 2 attributes
+                                matches = checkCondition(weightcon,weight,minWeight,weightoperand,salarycon,salary,minSalary,salaryoperand);
+                            }
+                            //Weight is not considered
+                            else if(!weightcon){
+                                matches = checkCondition(heightcon,height,minHeight,heightoperand,salarycon,salary,minSalary,salaryoperand);
+                            }
+                            //Salary is not considered
+                            else if(!salarycon){
+                                matches = checkCondition(weightcon,weight,minWeight,weightoperand,heightcon,height,minHeight,heightoperand);
+                            }
+
+                        }
+                        else{ //If user doesn't input any operators at all, then the default conditions are to be considered
+                            //Each attributes must be greater than or equal to the minimum value to be filtered
+                            if(height<minHeight || weight <minWeight || salary <minSalary ){
+                                matches = false;
+                            }
+                        }
+                        //If player's position is to be considered
                         if (POS != null && !POS.equals(position)) {
                             matches = false; // If position doesn't match, it fails
                         }
 
+                        //If all condition matchers, then player is added into the list
                         if (matches) {
-
                             playerdetails.setPhoto(profilePhoto);
                             playerdetails.setPOS(position);
                             playerdetails.setName(name);
@@ -215,7 +264,12 @@ public class MarketPage extends Fragment {
                             list.add(playerdetails);
                         }
                     }
+                    //Notify adapter so that UI can be changed
                     myadapter.notifyDataSetChanged();
+
+                    if(list.isEmpty()){//Display message if all players do not match the condition
+                        Toast.makeText(getContext(), "No Player Found", Toast.LENGTH_SHORT).show();
+                    }
                 }
 
             @Override
@@ -223,6 +277,46 @@ public class MarketPage extends Fragment {
                 Toast.makeText(getActivity(), "Error: " + error.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
+
+
     }
+
+
+    //Generic method that can only take of Number Class
+    //This method will evaluate comparision
+    private <T extends Number> boolean checkComparision(String sym,T value,T condition){
+        boolean match2 = false;
+        //Converts the generic into double
+        double val = value.doubleValue();
+        double cond = condition.doubleValue();
+        //Check condition between the value and the conditional value given the symbol
+        switch(sym){
+            case "<":
+                match2 = val<cond;break;
+            case "<=":
+                match2 = val<=cond;break;
+            case "==":
+                match2 = val==cond;break;
+            case ">":
+                match2 = val>cond;break;
+            case ">=":
+                match2 = val>=cond;break;
+        }
+        //If it doesn't meet the condition, return false
+        return match2;
+    }
+
+    //This method takes two condition along with its value, conditional value and operators used to compare
+    private <T extends Number> boolean checkCondition(boolean condition1,T val1,T condval1 ,String operand1, boolean condition2,T val2, T condval2,String operand2){
+        //If the two condition needs to be considered
+        if(condition1 && condition2){
+            return checkComparision(operand1,val1,condval1) && checkComparision(operand2,val2,condval2) ;
+        } else if (condition1) {//If only one of the condition need to be consider, then check the comparison of
+            return checkComparision(operand1,val1,condval1);
+        }else{
+            return checkComparision(operand2,val2,condval2);
+        }
+    }
+
 
 }

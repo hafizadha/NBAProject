@@ -19,7 +19,7 @@
             android:orientation="horizontal">
 
             <androidx.appcompat.widget.SearchView
-                android:layout_width="300dp"
+                android:layout_width="320dp"
                 android:layout_height="wrap_content"
                 android:id="@+id/searchView"
                 android:layout_marginLeft="8dp"
@@ -27,7 +27,8 @@
                 android:layout_marginBottom="8dp"
                 android:layout_marginRight="3dp"
                 android:background="@drawable/searchviewbg"
-                android:elevation="5dp"/>
+                android:elevation="5dp"
+                style="@style/CustomSearchView"/>
 
 
             <ImageView

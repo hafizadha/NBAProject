@@ -1,22 +1,21 @@
 package com.example.NBAProject.Journey.Graph;
 
+import android.content.Context;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.NBAProject.Journey.NBATeam;
 import com.example.NBAProject.R;
 
 import java.util.ArrayList;
@@ -24,20 +23,21 @@ import java.util.List;
 
 public class GraphTraverse extends Fragment {
 
+    Context context;
     private Spinner spinner;
     private TextView textView1, textView2;
     View view;
     RecyclerView recyclerView;
     TextView distance;
-    private LinearLayout infoLayout;
-    private List<String> dfslist;
-    private List<String> nearestlist;
+    private List<String> cityorder;
+    private ArrayList<NBATeam> nbacities;
+
     RouteAdapter routeAdapter;
     private static final int NUM_CITIES = 10;
     private static final int INF = Integer.MAX_VALUE;
-
     private static int pathdistance1 = 0;
-    private static int pathdistance2 = 0;
+
+    //For Nearest Neighbour Algorithm
     private final int[][] DISTANCES = {
             {0, INF, INF, INF, INF, 500, 1137, INF, 678, 983},
             {INF, 0, INF, INF, 554, INF, INF, 1507, 2214, INF},
@@ -51,18 +51,15 @@ public class GraphTraverse extends Fragment {
             {983, INF, 2584, INF, INF, INF, 458, INF, 778, 0},
     };
     private final String[] CITY_NAMES = {
-            "San Antonio", "Golden State", "Boston", "Miami", "Los Angeles",
-            "Phoenix", "Orlando", "Denver", "Oklahoma City", "Houston"
+            "SAS", "GSW", "BC", "MH", "LAL",
+            "PS", "OM", "DN", "OCT", "HR"
     };
 
-    public GraphTraverse() {
-        // Required empty public constructor
+    public GraphTraverse(Context context,ArrayList<NBATeam> nbacities) {
+        this.context = context;
+        this.nbacities = nbacities;
     }
 
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -71,8 +68,6 @@ public class GraphTraverse extends Fragment {
         spinner = view.findViewById(R.id.spinner);
         textView1 = view.findViewById(R.id.textView1);
         textView2 = view.findViewById(R.id.textView2);
-        infoLayout = view.findViewById(R.id.infoLayout);
-
 
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getContext(),R.array.choices, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -84,22 +79,14 @@ public class GraphTraverse extends Fragment {
                 hideAllViews();
                 switch (position) {
                     case 0:
-                        dfslist = new ArrayList<>();
+                        cityorder = new ArrayList<>();
                         pathdistance1 = 0;
+
                         showNearestNeighborTSPResult();
-
-                        recyclerView = view.findViewById(R.id.cities);
-                        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-                        routeAdapter = new RouteAdapter(dfslist);
-                        recyclerView.setAdapter(routeAdapter);
-
-                        routeAdapter.notifyDataSetChanged();
-
-                        distance = view.findViewById(R.id.totaldistance);
-                        distance.setText("TOTAL DISTANCE" + pathdistance1);
+                        generateRecyclerView(cityorder,pathdistance1);
                         break;
                     case 1:
-                        dfslist = new ArrayList<>();
+                        cityorder = new ArrayList<>();
                         NBAGraph test = new NBAGraph();
                         pathdistance1 = 0;
 
@@ -108,20 +95,11 @@ public class GraphTraverse extends Fragment {
                         visitedVertices1.add(startingVertex);
                         depthFirstTraversal(startingVertex, visitedVertices1);
 
+                        generateRecyclerView(cityorder,pathdistance1);
 
-                        recyclerView = view.findViewById(R.id.cities);
-                        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-                        routeAdapter = new RouteAdapter(dfslist);
-                        recyclerView.setAdapter(routeAdapter);
-
-                        routeAdapter.notifyDataSetChanged();
-
-                        distance = view.findViewById(R.id.totaldistance);
-                        distance.setText("TOTAL DISTANCE" + pathdistance1);
                         break;
                 }
             }
-
             @Override
             public void onNothingSelected(AdapterView<?> parentView) {
                 hideAllViews();
@@ -131,13 +109,39 @@ public class GraphTraverse extends Fragment {
         return view;
     }
 
+    //Generate the UI view showing the ordered cities and the total travel distance
+    private void generateRecyclerView(List<String> cityorder,int totalpath) {
+        ArrayList<NBATeam> sortedCities = new ArrayList<>();
+
+        for(String codename : cityorder){
+            for(NBATeam team: nbacities){
+                if(codename.equals(team.getCodename())){
+                    sortedCities.add(team);
+                    break;
+                }
+            }
+        }
+        recyclerView = view.findViewById(R.id.cities);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        routeAdapter = new RouteAdapter(sortedCities);
+        recyclerView.setAdapter(routeAdapter);
+
+        routeAdapter.notifyDataSetChanged();
+
+        distance = view.findViewById(R.id.totaldistance);
+        distance.setText("TOTAL DISTANCE" + pathdistance1);
+    }
+
+
+
+
     private void showNearestNeighborTSPResult() {
         List<Integer> route = nearestNeighborTSP();
         if (route != null) {
             int pathdistance1 = 0;
             for (int i = 0; i < route.size(); i++) {
                 int cityIndex = route.get(i);
-                dfslist.add(CITY_NAMES[cityIndex]);
+                cityorder.add(CITY_NAMES[cityIndex]);
                 if (i < route.size() - 1) {
                     pathdistance1 += DISTANCES[route.get(i)][route.get(i + 1)];
                 }
@@ -202,11 +206,12 @@ public class GraphTraverse extends Fragment {
         textView2.setVisibility(View.GONE);
     }
 
+
+    //DFS Algorithm
     public void depthFirstTraversal(Vertex start, ArrayList<Vertex> visitedVertices) {
         int totalteam = 10;
         int leafnodeweight = 0;
-        dfslist.add(start.getData());
-        Log.d("FFRFR","CITY" + dfslist.get(0));
+        cityorder.add(start.getData());
 
         boolean isLeaf = true;
 
@@ -217,7 +222,9 @@ public class GraphTraverse extends Fragment {
             if (!visitedVertices.contains(neighbor)) {
                 Vertex prev = e.getStart();
 
+                //Refer back to it previous vertex
                 for(Edge e2: prev.getEdges()){
+                    //If the vertex
                     if(!visitedVertices.contains(e2)){
                         isLeaf =false;
                     }

@@ -8,6 +8,7 @@ import java.util.ArrayList;
 
 public class Vertex {
 
+	//Vertex consist NBA team name and edge(s) to neighbour(s)
     private String data;
     private ArrayList<Edge> edges;
 
@@ -41,7 +42,7 @@ public class Vertex {
                     }
 
                 }
-                return null;
+		return null;
 	}
 
 	public void print(boolean showWeight) {

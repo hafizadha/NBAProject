@@ -24,14 +24,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="CURRENT SALARY:"
-                android:textColor="@color/white"
+                android:textColor="@color/black"
                 android:textSize="14dp"
                 android:layout_marginLeft="5dp"/>
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="@color/white"
+                android:textColor="@color/black"
                 android:textSize="14dp"
                 android:layout_marginLeft="8dp"
                 android:id="@+id/currentSalary"/>
@@ -40,7 +40,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="STATUS:"
-                android:textColor="@color/white"
+                android:textColor="@color/black"
                 android:textSize="14dp"
                 android:layout_marginLeft="80dp"/>
 
@@ -48,7 +48,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
 
-                android:textColor="@color/white"
+                android:textColor="@color/black"
                 android:textSize="14dp"
                 android:layout_marginLeft="5dp"
                 android:id="@+id/playerStatus"/>

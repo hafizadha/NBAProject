@@ -15,17 +15,18 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.example.NBAProject.R;
 
-import java.util.ArrayList;
 import java.util.Random;
+import java.util.Stack;
 
 public class InjuryAdapter extends RecyclerView.Adapter<InjuryAdapter.ViewHolder> {
 
     Context context;
-    ArrayList<PlayerInfo> list;
+    Stack<PlayerInfo> list;
 
-    public InjuryAdapter(Context context, ArrayList<PlayerInfo> list) {
+    public InjuryAdapter(Context context, Stack<PlayerInfo> list) {
         this.context = context;
         this.list = list;
+        notifyDataSetChanged();
     }
 
     @NonNull

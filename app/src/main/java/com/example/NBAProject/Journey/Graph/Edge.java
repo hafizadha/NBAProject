@@ -9,12 +9,14 @@ public class Edge {
 	private Vertex end;
 	private Integer weight;
 
+	//Each edge has a start Vertex, an end vertex, and the weight between them (distance)
 	public Edge(Vertex startV, Vertex endV, Integer inputWeight) {
 		this.start = startV;
 		this.end = endV;
 		this.weight = inputWeight;
 	}
 
+	//Getter methods
 	public Vertex getStart() {
 		return this.start;
 	}

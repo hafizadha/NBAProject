@@ -22,31 +22,34 @@ import com.example.NBAProject.MarketPlace.MarketPage;
 import com.example.NBAProject.Sidebar.DrawerAdapter;
 import com.example.NBAProject.Sidebar.DrawerItem;
 import com.example.NBAProject.Sidebar.SimpleItem;
-import com.example.NBAProject.Sidebar.SpaceItem;
 import com.example.NBAProject.TeamRoster.Roster;
+import com.example.NBAProject.TeamRoster.RosterManager;
 import com.yarolegovich.slidingrootnav.SlidingRootNav;
 import com.yarolegovich.slidingrootnav.SlidingRootNavBuilder;
 
 import java.util.Arrays;
 
+//This Class is acts as the Main Activity, which is the Side bar that can transition into different pages for decoration
+//None of the basic features can be found here
 public class NavigationBar extends AppCompatActivity implements DrawerAdapter.OnItemSelectedListener {
-
 
     private final int POS_Market = 0;
     private final int POS_Team = 1;
     private final int POS_Journey = 2;
+    RosterManager rosterManager;
 
-    private String[] screenTitles;
-    private Drawable[] screenIcons;
-
-    private SlidingRootNav slidingRootNav;
+    private String[] screenTitles;// Collection of sidebar titles
+    private Drawable[] screenIcons; //Collection of sidebar icons
+    private SlidingRootNav slidingRootNav; //External dependency that gives the sliding animation for the sidebar
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
 
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        //Setting the top bar of phone to black
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             getWindow().setStatusBarColor(getResources().getColor(R.color.black, this.getTheme()));
         } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -56,6 +59,7 @@ public class NavigationBar extends AppCompatActivity implements DrawerAdapter.On
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        //Generate the custom sliding sidebar
         slidingRootNav = new SlidingRootNavBuilder(this)
                 .withToolbarMenuToggle(toolbar)
                 .withMenuOpened(false)
@@ -74,33 +78,35 @@ public class NavigationBar extends AppCompatActivity implements DrawerAdapter.On
                 ));
         adapter.setListener(this);
 
-        RecyclerView list = findViewById(R.id.list);
+        RecyclerView list = findViewById(R.id.list); //Ignore error
         list.setNestedScrollingEnabled(false);
         list.setLayoutManager(new LinearLayoutManager(this));
         list.setAdapter(adapter);
-
         adapter.setSelected(POS_Market);
     }
 
     @Override
     public void onItemSelected(int position) {
         if (position == POS_Market) {
-            MarketPage fragment = new MarketPage();
-            TextView PageTitle = findViewById(R.id.pagetitle);
-
-            // Set the text value of the TextView
-            PageTitle.setText("MARKET");
-            showFragment(fragment);
-        }
-        else if(position == POS_Team){
+            //Create a new Roster fragment and call the showFragment to replace the container view
             Roster fragment = new Roster();
             TextView PageTitle = findViewById(R.id.pagetitle);
 
             // Set the text value of the TextView
             PageTitle.setText("Team Roster");
             showFragment(fragment);
+
+        }
+        else if(position == POS_Team){
+            //Create a new MarketPage and call the showFragment to replace the container view with the fragment
+            MarketPage fragment = new MarketPage();
+            TextView PageTitle = findViewById(R.id.pagetitle);
+            // Set the text value of the TextView
+            PageTitle.setText("MARKET");
+            showFragment(fragment);
         }
         else if(position == POS_Journey){
+            //Create a new MapFragment and call the showFragment to replace the container view
             MapFragment fragment = new MapFragment();
             TextView PageTitle = findViewById(R.id.pagetitle);
 
@@ -112,6 +118,8 @@ public class NavigationBar extends AppCompatActivity implements DrawerAdapter.On
 
     }
 
+
+    //Method to switch the container layout of main activity into a wanted fragment
     private void showFragment(Fragment fragment) {
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.container, fragment)
@@ -120,28 +128,33 @@ public class NavigationBar extends AppCompatActivity implements DrawerAdapter.On
 
     @SuppressWarnings("rawtypes")
     private DrawerItem createItemFor(int position) {
+        //Create Icons and their colors ( when idle and clicked)
         return new SimpleItem(screenIcons[position], screenTitles[position])
                 .withIconTint(color(R.color.textColorSecondary))
                 .withTextTint(color(R.color.textColorPrimary))
-                .withSelectedIconTint(color(R.color.colorAccent))
-                .withSelectedTextTint(color(R.color.colorAccent));
+                .withSelectedIconTint(color(R.color.NBAblue))
+                .withSelectedTextTint(color(R.color.NBAblue));
     }
 
     private String[] loadScreenTitles() {
+        //Retrieve array of String titles in values -> strings.xml and generate an array of String
         return getResources().getStringArray(R.array.ld_activityScreenTitles);
     }
 
     private Drawable[] loadScreenIcons() {
+        //Retrieve array of String icons in values -> strings.xml
         TypedArray ta = getResources().obtainTypedArray(R.array.ld_activityScreenIcons);
         Drawable[] icons = new Drawable[ta.length()];
         for (int i = 0; i < ta.length(); i++) {
+
+            //get the resource id of the current index from the id
             int id = ta.getResourceId(i, 0);
             if (id != 0) {
-                icons[i] = ContextCompat.getDrawable(this, id);
+                icons[i] = ContextCompat.getDrawable(this, id); //Get specific drawable based on their resource ID and load into array
             }
         }
         ta.recycle();
-        return icons;
+        return icons; //Return Drawables (icon images)
     }
 
     @ColorInt

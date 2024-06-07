@@ -16,10 +16,10 @@
         android:layout_marginLeft="100dp"/>
 
     <androidx.recyclerview.widget.RecyclerView
-        android:layout_width="match_parent"
-        android:layout_height="700dp"
         android:id="@+id/contractQueue"
-        android:layout_margin="10dp"/>
+        android:layout_width="match_parent"
+        android:layout_height="294dp"
+        android:layout_margin="10dp" />
 
     <Button
         android:layout_width="wrap_content"

@@ -65,22 +65,16 @@ public class PrintAdapter extends RecyclerView.Adapter<PrintAdapter.MyViewHolder
         }
     }
 
-
-
     @Override
     public int getItemCount() {
         return list.size();
     }
 
     public static class MyViewHolder extends RecyclerView.ViewHolder {
-
         ImageView profileImg;
         TextView name,age,assist,height,pos,points,reb,salary,steal,weight,block;
-
-
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
-
             profileImg = itemView.findViewById(R.id.profileImage);
             name = itemView.findViewById(R.id.playerNameTV);
             age= itemView.findViewById(R.id.AgeTV);
@@ -93,10 +87,7 @@ public class PrintAdapter extends RecyclerView.Adapter<PrintAdapter.MyViewHolder
             steal = itemView.findViewById(R.id.StealsTV);
             weight = itemView.findViewById(R.id.WeightTV);
             block = itemView.findViewById(R.id.BlocksTV);
-
         }
-
-
     }
 
 }

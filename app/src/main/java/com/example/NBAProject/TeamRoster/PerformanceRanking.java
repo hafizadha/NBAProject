@@ -25,22 +25,22 @@ public class PerformanceRanking extends Fragment {
     private ArrayList<PlayerInfo> players = new ArrayList<>();
     private double[] weights;
 
-
-
-
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.rankpage,container,false);
 
 
-
+        //Receive an ArrayList of players passed from the Roster class
         Bundle bundle = getArguments();
         if (bundle != null) {
             players = bundle.getParcelableArrayList("playerlist");
         }
+
+        //Method to rank the players based on their composite score ( sorting )
         rankPlayers();
 
+        //From the previous method call, the arraylist of players are sorted and then passed to the Adapter to display them
         recyclerView = view.findViewById(R.id.rankAdapter);// 3 columns
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -53,17 +53,13 @@ public class PerformanceRanking extends Fragment {
         // Add the item decoration to the RecyclerView
         recyclerView.addItemDecoration(itemDecoration);
 
-
-
-
         return view;
     }
 
 
     public void rankPlayers() {
         mergeSort(players, 0, players.size() - 1);
-        // Print the ranked players
-        System.out.println("-- Player Performance Ranking --");
+        // Print the ranked players in Logcat
         for (int i = 0; i < players.size(); i++) {
             PlayerInfo player = players.get(i);
             double compositeScore = Math.round(calculateCompositeScore(player));
@@ -133,15 +129,16 @@ public class PerformanceRanking extends Fragment {
 
     private double calculateCompositeScore(PlayerInfo player) {
         String positions = player.getPOS().toString();
-        Log.d("FRF","FRF" + positions);
+
+        //These attributes are stored as String in the database, thus needed to parse into Double for calculations
         double points = Double.parseDouble(player.getPoints());
-        Log.d("FRF","FRF" + positions);
         double rebounds = Double.parseDouble(player.getRebound());
         double assists = Double.parseDouble(player.getAssist());
         double steals = Double.parseDouble(player.getSteal());
         double blocks = Double.parseDouble(player.getBlock());
 
-        // Weights are not finalised yet
+        // Refer to the player's position, and assign weightage to evaluate performance
+        // Refer to report, for more details on how each position is considered
         if(positions.contains("G")){
             weights = new double[]{10, 10, 15, 15, 10};
         }else if(positions.contains("F")){
@@ -153,6 +150,7 @@ public class PerformanceRanking extends Fragment {
             return 0.0;
         }
 
+        //Score is calculated by totalling the product of each attributes and its respective weightage
         double compositeScore = (points * weights[0]) + (rebounds * weights[1]) +
                 (assists * weights[2]) + (steals * weights[3]) + (blocks * weights[4]);
 

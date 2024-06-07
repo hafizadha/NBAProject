@@ -8,16 +8,18 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.NBAProject.Journey.NBATeam;
 import com.example.NBAProject.R;
 
-import java.util.List;
+import java.util.ArrayList;
 
+//Generate the UI of order of cities visited sorted by the two algorithms
 public class RouteAdapter extends RecyclerView.Adapter<RouteAdapter.MyViewHolder> {
-    private List<String> list;
-
-    public RouteAdapter(List<String> dataList) {
-        this.list = dataList;
+    private ArrayList<NBATeam> nbaTeams;
+    public RouteAdapter(ArrayList<NBATeam> dataList) {
+        this.nbaTeams = dataList;
     }
+
 
     @NonNull
     @Override
@@ -26,26 +28,22 @@ public class RouteAdapter extends RecyclerView.Adapter<RouteAdapter.MyViewHolder
         return new RouteAdapter.MyViewHolder(view);
     }
 
-
     @Override
     public void onBindViewHolder(@NonNull RouteAdapter.MyViewHolder holder, int position) {
-        String cityname = list.get(position);
+        NBATeam team = nbaTeams.get(position);
+        String cityname = team.getLocation();
 
         // Setting Age as text
         holder.city.setText(String.format(cityname));
 
     }
 
-
-
     @Override
     public int getItemCount() {
-        return list.size();
+        return nbaTeams.size();
     }
 
     public static class MyViewHolder extends RecyclerView.ViewHolder {
-
-
         TextView city;
 
 

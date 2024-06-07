@@ -6,28 +6,33 @@ import android.os.Parcelable;
 import java.io.Serializable;
 import java.util.Objects;
 
-public class PlayerInfo implements Parcelable, Serializable {
-    String Name;
-    String Age;
-    String Assist;
-    Integer Height;
-    String POS;
-    String Points;
-    String Rebound;
-    Integer Salary;
-    String Steal;
-    Float Weight;
-    String Block;
-    String photo;
-    private String injuryDescription;
+public class PlayerInfo implements Comparable<PlayerInfo>, Parcelable, Serializable {
+    //Comparable interface: Object can be compared with another same object for ordering and sorting (used for Priority Queue)
+    //Parcelable interface: Store data into a Parcel which can be used to pass between Android activities and services
+    //Serializable interface: Alternative to parcelable, but not commonly used for Android projects
 
-    private double compositeScore;
+    //Attributes of a player
+    private String Name;
+    private String Age;
+    private String Assist;
+    private Integer Height;
+    private String POS;
+    private String Points;
+    private String Rebound;
+    private Integer Salary;
+    private String Steal;
+    private Integer Weight;
+    private String Block;
+    private String photo;
+    private String injuryDescription; //Information on the type of injury ( for injury stack )
+    private long timestamp; //For injuryStack in database, used as reference to sort players chronologically
+    private double compositeScore; //Player's score to be ranked in performance ranking
 
      public PlayerInfo(){
 
      }
 
-    public PlayerInfo(String name, String age, String assist, Integer height, String POS, String points, String rebound, Integer salary, String steal, Float weight, String block, String photo) {
+    public PlayerInfo(String name, String age, String assist, Integer height, String POS, String points, String rebound, Integer salary, String steal, Integer weight, String block, String photo) {
         Name = name;
         Age = age;
         Assist = assist;
@@ -43,6 +48,7 @@ public class PlayerInfo implements Parcelable, Serializable {
     }
 
 
+    //Implementation of Parcelable interface
     @Override
     public int describeContents() {
         return 0;
@@ -50,7 +56,7 @@ public class PlayerInfo implements Parcelable, Serializable {
 
     protected PlayerInfo(Parcel in) {
         Height = in.readInt();
-        Weight = in.readFloat();
+        Weight = in.readInt();
         Age = in.readString();
         Points = in.readString();
         Steal = in.readString();
@@ -65,7 +71,7 @@ public class PlayerInfo implements Parcelable, Serializable {
     }
 
 
-
+    //Overriding methods from Parcelable interface
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeInt(Height);
@@ -114,7 +120,7 @@ public class PlayerInfo implements Parcelable, Serializable {
     }
 
 
-
+    //Getter and setter methods for attributes
     public String getName() {
         return Name;
     }
@@ -184,11 +190,11 @@ public class PlayerInfo implements Parcelable, Serializable {
         Steal = steal;
     }
 
-    public Float getWeight() {
+    public Integer getWeight() {
         return Weight;
     }
 
-    public void setWeight(Float weight) {
+    public void setWeight(Integer weight) {
         Weight = weight;
     }
 
@@ -208,6 +214,7 @@ public class PlayerInfo implements Parcelable, Serializable {
         this.photo = photo;
     }
 
+    //For injury reserve
     public String getInjuryDescription() {
         return injuryDescription;
     }
@@ -216,11 +223,35 @@ public class PlayerInfo implements Parcelable, Serializable {
         this.injuryDescription = injuryDescription;
     }
 
+    //For player's ranking performance
     public double getCompositeScore() {
         return compositeScore;
     }
 
     public void setCompositeScore(double compositeScore) {
         this.compositeScore = compositeScore;
+    }
+    public void setTimestamp(long timestamp) {
+        this.timestamp = timestamp;
+    }
+
+    public long getTimestamp() {
+        return timestamp;
+    }
+
+    //Overriding method in Comparable interface
+    @Override
+    public int compareTo(PlayerInfo o) {
+        if(Float.parseFloat(this.getPoints()) < Float.parseFloat(o.getPoints())) {
+            return 1;
+        } else if (Float.parseFloat(this.getPoints()) > Float.parseFloat(o.getPoints())) {
+            return -1;
+        } else {
+            return 0;
+        }
+    }
+    @Override
+    public int hashCode() {
+        return Objects.hash(Name, Points);
     }
 }

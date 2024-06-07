@@ -3,7 +3,6 @@ package com.example.NBAProject.TeamRoster;
 
 import android.app.AlertDialog;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,25 +19,29 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.example.NBAProject.R;
 import com.example.NBAProject.MarketPlace.RosterPrint;
+import com.example.NBAProject.R;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
 
 public class TestAdapter extends RecyclerView.Adapter<TestAdapter.MyViewHolder> {
+    //Adapter is an implementation to dynamically display a Collection of Objects into the Recycler view
 
+    //This adapter (each item inside the Recycler view) have two modes,
+    // where it will show different view of popup window when clicked.
     public static final int MODE_PLAYER_LIST = 1;
     public static final int MODE_ROSTER = 2;
 
-
+    //Roster manager for adding and removing mechanism for the adapter
     RosterManager rosterManager;
 
-    //OnItemListener onItemListener;
+    //Context are for accessing resources, inflating new layouts and using system services
+    //Some services like LayoutInflator, AlertDialog, and Toast require context to function
     Context context;
     ArrayList<PlayerInfo> list;
-    int mode;
+    int mode; //To determine the mode of the Adapter
 
 
     public TestAdapter(Context context, ArrayList<PlayerInfo> list, int mode,RosterManager rosterManager) {
@@ -48,17 +51,14 @@ public class TestAdapter extends RecyclerView.Adapter<TestAdapter.MyViewHolder> 
         this.rosterManager = rosterManager;
     }
 
+    //Filtered retrieved from the input in the search bar ( in MarketPage )
     public void setFilteredList(ArrayList<PlayerInfo> filteredList){
-        this.list = filteredList;
-        notifyDataSetChanged();
+        this.list = filteredList;//filteredList consists of Players with names that matches the input from the Searchbar
+        notifyDataSetChanged(); //This method needs to be called when there's change in data in the Collection to update the UI
     }
 
-    public TestAdapter(Context context, ArrayList<PlayerInfo> list) {
-        this.context = context;
-        this.list = list;
-        notifyDataSetChanged();
-    }
 
+    //Inflates the item layout (player cards) for view holder
     @NonNull
     @Override
     public TestAdapter.MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -66,24 +66,24 @@ public class TestAdapter extends RecyclerView.Adapter<TestAdapter.MyViewHolder> 
         return new MyViewHolder(v);
     }
 
+    //Components inside the item layout can be adjusted here (settings text, images, etc.)
     @Override
     public void onBindViewHolder(@NonNull TestAdapter.MyViewHolder holder, int position) {
         PlayerInfo playerInfo = list.get(position);
 
         // Setting Age as text
-        holder.age.setText(String.format("Age:%s", playerInfo.getAge()));
-        holder.points.setText(String.format("Points:%s", playerInfo.getPoints()));
-        holder.assist.setText(String.format("Assist:%s", playerInfo.getAssist()));
+        holder.age.setText(String.format("Age: %s", playerInfo.getAge()));
+        holder.points.setText(String.format("Points: %s", playerInfo.getPoints()));
+        holder.assist.setText(String.format("Assist: %s", playerInfo.getAssist()));
         holder.steal.setText("Steal:" + String.valueOf(playerInfo.getSteal()));
-        holder.weight.setText(String.format("Weight:%s", playerInfo.getWeight()));
-        holder.height.setText(String.format("Height:%s", playerInfo.getHeight()));
-        holder.block.setText(String.format("Block:%s", playerInfo.getBlock()));
-        holder.reb.setText(String.format("Rebound:%s", playerInfo.getRebound()));
-        holder.salary.setText(String.format("Salary:%s", playerInfo.getSalary()));
+        holder.weight.setText(String.format("Weight: %s", playerInfo.getWeight()));
+        holder.height.setText(String.format("Height: %s", playerInfo.getHeight()));
+        holder.block.setText(String.format("Block: %s", playerInfo.getBlock()));
+        holder.reb.setText(String.format("Rebound: %s", playerInfo.getRebound()));
+        holder.salary.setText(String.format("Salary: %s", playerInfo.getSalary()));
 
         holder.name.setText(playerInfo.getName());
         holder.pos.setText("Position:" + playerInfo.getPOS());
-
 
 
         String imageURL = playerInfo.getPhoto();
@@ -94,6 +94,8 @@ public class TestAdapter extends RecyclerView.Adapter<TestAdapter.MyViewHolder> 
                 .placeholder(R.drawable.player_dunking) // Optional placeholder
                 .into(holder.profileImg);
 
+
+        //Show popup dialog window when the itemView is clicked based on the mode
         holder.itemView.setOnClickListener(view -> {
             if (mode == MODE_PLAYER_LIST) {
                 showPlayerListDialog(holder, position);
@@ -110,82 +112,67 @@ public class TestAdapter extends RecyclerView.Adapter<TestAdapter.MyViewHolder> 
         }
     }
 
+    //This popup shows when clicking the player cards in MarketPage
     private void showPlayerListDialog(MyViewHolder holder, int position) {
+        //Inflates the popout layout and then set AlertDialog with the layout
         View dialogView = LayoutInflater.from(context).inflate(R.layout.popupview, null);
         AlertDialog dialog = new AlertDialog.Builder(context)
                 .setView(dialogView)
                 .create();
 
-        Long balance = rosterManager.getCurrentSalary();
+        //Get the current balance from rosterManager, and use it to set the text View ( shows balance to front end)
+        Long balance = rosterManager.getBalance();
         TextView showbalance = dialogView.findViewById(R.id.showbalance);
         showbalance.setText("Balance: " + balance);
 
         Button cancelButton = dialogView.findViewById(R.id.cancelButton);
         Button confirmButton = dialogView.findViewById(R.id.confirmButton);
-
+        //When confirm button is clicked:
         confirmButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 PlayerInfo data = list.get(position);
-                boolean added = RosterManager.getInstance().addPlayer(data);
-                if(added){
+                boolean sufficient = rosterManager.salaryPass(data.getSalary());//Compares selected player's salary with the current balance
+                boolean added;
+                if(sufficient){ //If the player salary is less than or equal to // the balance
+                    added = RosterManager.getInstance().addPlayer(data);//Return true if added into the roster
 
-                    list.remove(position);
-                    notifyDataSetChanged();
+                    if(added){
+                        //Remove the selected player in
+                        list.remove(position);
+                        notifyDataSetChanged(); //Updates to RecyclerView
 
+                        FragmentActivity activity = (FragmentActivity) view.getContext();
+                        FragmentManager fragmentManager = activity.getSupportFragmentManager();
+                        //Show message if added to roster
+                        Toast.makeText(context,data.getName() + " added to roster",Toast.LENGTH_SHORT).show();
+                        // Create a new instance of the new fragment with the updated list
+                        RosterPrint fragment = RosterPrint.newInstance(list);
 
-                    FragmentActivity activity = (FragmentActivity) view.getContext();
-                    FragmentManager fragmentManager = activity.getSupportFragmentManager();
-
-                    // Create a new instance of the new fragment with the updated list
-                    RosterPrint fragment = RosterPrint.newInstance(list);
-
-                    // Perform the fragment transaction
-                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                    fragmentTransaction.replace(R.id.container, fragment);
-                    fragmentTransaction.addToBackStack(null);
-                    fragmentTransaction.commit();
-
+                        // Perform the fragment transaction
+                        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                        fragmentTransaction.replace(R.id.container, fragment);
+                        fragmentTransaction.addToBackStack(null);
+                        fragmentTransaction.commit();
+                    }
+                    else{ //Not added means the player is already in roster
+                        Toast.makeText(context,"Player is already in your team",Toast.LENGTH_SHORT).show();}
+                }
+                else{ //If insufficient balance, display error messages
+                    Toast.makeText(context,"Insufficient balance",Toast.LENGTH_SHORT).show();
                 }
                 dialog.dismiss();
             }
         });
 
+        //Close the popup view when clicked
         cancelButton.setOnClickListener(view -> dialog.dismiss());
-        dialog.show();
+
+        dialog.show();//Show popup window
     }
 
 
-    private void savePlayerToFirebase(PlayerInfo data) {
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference myRef = database.getReference("roster"); // You can change "roster" to any branch name you want
-
-        String playerId = myRef.push().getKey(); // Generate a unique key for each player
-        data.setName(playerId);
-        myRef.child(playerId).setValue(data).addOnCompleteListener(task -> {
-            if (task.isSuccessful()) {
-                Log.d("Firebase", "Player info saved successfully.");
-            } else {
-                Log.d("Firebase", "Failed to save player info.");
-            }
-        });
-    }
-
-
-    private void saveCurrentSalaryToFirebase(Long newSalary) {
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference salaryRef = database.getReference("currentSalary");
-
-        salaryRef.setValue(newSalary).addOnCompleteListener(task -> {
-            if (task.isSuccessful()) {
-                Log.d("Firebase", "Current salary updated successfully.");
-            } else {
-                Log.d("Firebase", "Failed to update current salary.");
-            }
-        });
-    }
-
-
+    //This popup shows when clicking the player cards in Roster
     private void showRosterDialog(MyViewHolder holder, int position) {
         View dialogView = LayoutInflater.from(context).inflate(R.layout.rosterpopupview, null);
         AlertDialog dialog = new AlertDialog.Builder(context)
@@ -199,31 +186,48 @@ public class TestAdapter extends RecyclerView.Adapter<TestAdapter.MyViewHolder> 
         // Get the data for the selected player
         PlayerInfo data = list.get(position);
 
+        //Display selected player's name in this popup
         TextView PlayerName = dialogView.findViewById(R.id.playerNameTV);
-
-
         PlayerName.setText(data.getName());
 
+        //When 'Remove player' button is clicked:
         remove.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                //Get the specific PlayerInfo object that was clicked
                 PlayerInfo data = list.get(position);
+                String playerId = data.getName(); // Get the player ID
+                removePlayerFromFirebase1(playerId); // Pass the player ID to the method
+
+                //Remove from current roster and roster node in database
                 RosterManager.getInstance().removePlayerFromRoster(data);
-                notifyDataSetChanged();
+
+                //Remove from current Stack Reserve and injuryReserve node in database
+                RosterManager.getInstance().removeFromInjuryReserve(data);
+
+                //Remove from current Queue and contractQueue node in database
+                RosterManager.getInstance().removeFromContractExtensionQueue();
+
+                //Remove from the adapter and update the UI
+                list.remove(position); // Remove the item from the list
+                notifyDataSetChanged(); // Notify adapter about the item removal
                 dialog.dismiss();
+
             }
         });
 
+        //When add to Injury button is clicked:
         addInjury.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
                 PlayerInfo data = list.get(position);
-                RosterManager.getInstance().addToInjuryReserve(data, "Injury Description");
-
+                boolean checkExist = RosterManager.getInstance().checkExistInjury(data);
+                Log.d("EXIST","EXIST" + checkExist);
+                if(!checkExist)
+                    RosterManager.getInstance().addToInjuryReserve(data, "Injury Description");
                 // Save the player's injury status
-                savePlayerInjuryStatus(data.getName(), true);
 
-                notifyDataSetChanged();
                 dialog.dismiss();
             }
         });
@@ -235,8 +239,6 @@ public class TestAdapter extends RecyclerView.Adapter<TestAdapter.MyViewHolder> 
                 PlayerInfo data = list.get(position);
                 RosterManager.getInstance().addToContractExtensionQueue(data);
 
-                savePlayerContractStatus(data.getName(),true);
-
                 notifyDataSetChanged();
                 dialog.dismiss();
             }
@@ -247,12 +249,12 @@ public class TestAdapter extends RecyclerView.Adapter<TestAdapter.MyViewHolder> 
         dialog.show();
     }
 
-
-    private void removePlayerFromFirebase(String playerId) {
+    private void removePlayerFromFirebase1(String playerId) {
         DatabaseReference myRef = FirebaseDatabase.getInstance().getReference("roster");
 
         if (playerId != null) {
-            myRef.child(playerId).removeValue().addOnCompleteListener(task -> {
+            String sanitizedPlayerId = sanitizePlayerName(playerId);
+            myRef.child(sanitizedPlayerId).removeValue().addOnCompleteListener(task -> {
                 if (task.isSuccessful()) {
                     Log.d("Firebase", "Player info removed successfully.");
                     Toast.makeText(context, "Player removed successfully.", Toast.LENGTH_SHORT).show();
@@ -264,25 +266,10 @@ public class TestAdapter extends RecyclerView.Adapter<TestAdapter.MyViewHolder> 
         }
     }
 
-
-    private void savePlayerInjuryStatus(String playerName, boolean isInjured) {
-        // Use SharedPreferences or any other persistent storage mechanism to save the player's injury status
-        SharedPreferences sharedPreferences = context.getSharedPreferences("PlayerInjuries", Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putBoolean(playerName, isInjured);
-        editor.apply();
+    // Sanitize player name to remove invalid characters for Firebase Database paths
+    private String sanitizePlayerName(String playerName) {
+        return playerName.replaceAll("[.$\\[\\]#\\/]", "_");
     }
-
-    private void savePlayerContractStatus(String playerName, boolean isContractEnd) {
-        // Use SharedPreferences or any other persistent storage mechanism to save the player's injury status
-        SharedPreferences sharedPreferences = context.getSharedPreferences("PlayerContracts", Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putBoolean(playerName, isContractEnd);
-        editor.apply();
-    }
-
-
-
 
     @Override
     public int getItemCount() {
@@ -290,10 +277,9 @@ public class TestAdapter extends RecyclerView.Adapter<TestAdapter.MyViewHolder> 
     }
 
     public static class MyViewHolder extends RecyclerView.ViewHolder {
-
+        //Components inside the player card's layout (player.xml)
         ImageView profileImg;
         TextView name,age,assist,height,pos,points,reb,salary,steal,weight,block;
-
 
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);

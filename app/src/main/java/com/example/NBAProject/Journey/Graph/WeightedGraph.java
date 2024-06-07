@@ -10,7 +10,6 @@ public class WeightedGraph {
     
     private ArrayList<Vertex> vertices;
 
-
     public WeightedGraph(){
         this.vertices = new ArrayList<Vertex>();
     }
@@ -40,8 +39,6 @@ public class WeightedGraph {
     public ArrayList<Vertex> getVertices() {
 		return this.vertices;
 	}
-
-
 
 	public Vertex getVertexByValue(String value) {
 		for(Vertex v: this.vertices) { 

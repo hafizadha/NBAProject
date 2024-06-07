@@ -1,7 +1,6 @@
 package com.example.NBAProject.TeamRoster;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,10 +15,10 @@ import com.example.NBAProject.R;
 
 import java.util.ArrayList;
 
+//Shows the ranking of Players based on their composite score
 public class RankAdapter extends RecyclerView.Adapter<RankAdapter.MyViewHolder> {
     Context context;
     ArrayList<PlayerInfo> list;
-
     public RankAdapter(Context context, ArrayList<PlayerInfo> list) {
         this.context = context;
         this.list = list;
@@ -36,13 +35,11 @@ public class RankAdapter extends RecyclerView.Adapter<RankAdapter.MyViewHolder> 
     public void onBindViewHolder(@NonNull RankAdapter.MyViewHolder holder, int position) {
         PlayerInfo playerInfo = list.get(position);
 
-        holder.score.setText(String.format("Score:%s", playerInfo.getCompositeScore()));
+        //Setting values for components in the layout of each player card
+        holder.score.setText(String.format("%s", playerInfo.getCompositeScore()));
         holder.name.setText(playerInfo.getName());
 
-
-
         String imageURL = playerInfo.getPhoto();
-        Log.d("Image URL", "URL: " + imageURL);
 
         Glide.with(holder.itemView.getContext())
                 .load(imageURL)
@@ -58,12 +55,15 @@ public class RankAdapter extends RecyclerView.Adapter<RankAdapter.MyViewHolder> 
 
     public static class MyViewHolder extends RecyclerView.ViewHolder {
 
+        //Components inside the layout
+        //Only relevant information are to be displayed.
         ImageView profileImg;
-        TextView name, age,score;
+        TextView name,score;
 
 
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
+            //References from the layout
             profileImg = itemView.findViewById(R.id.profileImage);
             name = itemView.findViewById(R.id.playerNameTV);
             score = itemView.findViewById(R.id.scoreTV);

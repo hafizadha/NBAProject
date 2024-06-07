@@ -1,5 +1,6 @@
 package com.example.NBAProject.TeamRoster;
 
+import android.app.AlertDialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
@@ -7,7 +8,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -45,10 +45,7 @@ public class Roster extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.teamrosterpage, container, false);
 
-        LinearLayout linearLayout = view.findViewById(R.id.rosterLayout);
-
         context = getActivity();
-
 
         rosterManager = RosterManager.getInstance();
 
@@ -86,12 +83,11 @@ public class Roster extends Fragment {
         swipeRefreshLayout.setOnRefreshListener(this::fetchDataFromFirebase);
 
         button.setOnClickListener(view -> {
-            PlayerInfo data = dataList.remove(dataList.size() - 1);
-            String playerId = data.getName();
-            removePlayerFromFirebase(playerId); // Pass the player ID to the method
-            RosterManager.getInstance().removePlayerFromRoster(data);
-
-            adapter.notifyDataSetChanged(); // Notify adapter about the item removal
+            Bundle bundle = new Bundle();
+            bundle.putParcelableArrayList("playerlist", dataList);
+            PerformanceRanking fragment = new PerformanceRanking();
+            fragment.setArguments(bundle);
+            getParentFragmentManager().beginTransaction().replace(R.id.container,fragment).addToBackStack(null).commit();
         });
 
         button2.setOnClickListener(view -> {
@@ -105,38 +101,28 @@ public class Roster extends Fragment {
         });
 
         button4.setOnClickListener(view -> {
-
-            Bundle bundle = new Bundle();
-            bundle.putParcelableArrayList("playerlist", dataList);
-            PerformanceRanking fragment = new PerformanceRanking();
-            fragment.setArguments(bundle);
-            getParentFragmentManager().beginTransaction().replace(R.id.container,fragment).addToBackStack(null).commit();
-
+            showTeamStatus();
         });
 
         return view;
 
     }
 
+    private void showTeamStatus(){
+        View dialogView = LayoutInflater.from(context).inflate(R.layout.teamstatus, null);
+        AlertDialog dialog = new AlertDialog.Builder(context)
+                .setView(dialogView)
+                .create();
 
+        TextView totalplayer = dialogView.findViewById(R.id.totalPlayers);
+        int total = rosterManager.getCurrentPlayersfrom();
+        totalplayer.setText(String.valueOf(total));
 
-    private void removePlayerFromFirebase(String playerId) {
-        DatabaseReference myRef = FirebaseDatabase.getInstance().getReference("roster");
-
-        if (playerId != null) {
-            myRef.child(playerId).removeValue().addOnCompleteListener(task -> {
-                if (task.isSuccessful()) {
-                    Log.d("Firebase", "Player info removed successfully.");
-                    //Toast.makeText(context, "Player removed successfully.", Toast.LENGTH_SHORT).show();
-                } else {
-                    Log.d("Firebase", "Failed to remove player info.");
-                    //Toast.makeText(context, "Failed to remove player.", Toast.LENGTH_SHORT).show();
-                }
-            });
-        }
+        dialog.show();
     }
 
-    private void fetchDataFromFirebase() {
+
+    public void fetchDataFromFirebase() {
         DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("roster");
         databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
@@ -218,14 +204,14 @@ public class Roster extends Fragment {
         });
     }
 
-    private void fetchCurrentSalaryFromFirebase() {
+    public void fetchCurrentSalaryFromFirebase() {
         DatabaseReference salaryRef = FirebaseDatabase.getInstance().getReference("currentSalary");
         salaryRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 Long currentSalary = snapshot.getValue(Long.class);
                 if (currentSalary != null) {
-                    RosterManager.getInstance().getCurrentSalary(); // Update the current salary in RosterManager
+                    RosterManager.getInstance().getBalance(); // Update the current salary in RosterManager
                     textView1.setText(String.valueOf(currentSalary)); // Update the UI
                 }
             }
@@ -262,12 +248,12 @@ public class Roster extends Fragment {
         centers.setText("Centers: " + centersCnt);
 
         // Set text color for guards
-        guards.setTextColor(context.getResources().getColor(guardsCnt == 1 ? R.color.black : guardsCnt >= 2 ? R.color.green : R.color.white));
+        guards.setTextColor(context.getResources().getColor(guardsCnt >= 2 ? R.color.green : R.color.black));
 
         // Set text color for forwards
-        forwards.setTextColor(context.getResources().getColor(forwardsCnt == 1 ? R.color.black : forwardsCnt >= 2 ? R.color.green : R.color.white));
+        forwards.setTextColor(context.getResources().getColor(forwardsCnt >= 2 ? R.color.green : R.color.black));
 
         // Set text color for centers
-        centers.setTextColor(context.getResources().getColor(centersCnt == 1 ? R.color.black : centersCnt >= 2 ? R.color.green : R.color.white));
+        centers.setTextColor(context.getResources().getColor(centersCnt >= 2 ? R.color.green : R.color.black));
     }
 }

@@ -48,12 +48,12 @@ import java.util.concurrent.CountDownLatch;
 
 
 public class MapFragment extends Fragment {
-
-    ArrayList<NBATeam> teamArrayList = new ArrayList<>();
+    ArrayList<NBATeam> teamArrayList;
     Geocoder geocoder;
     View view;
     DatabaseReference databaseReference;
     Button toRoute;
+    boolean newupload;
     private LatLngBounds USA = new LatLngBounds(
             new LatLng(32.666126, -118.057793), new LatLng(43.885896, -69.149253));
 
@@ -63,36 +63,18 @@ public class MapFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        databaseReference = FirebaseDatabase.getInstance().getReference().child("team");
-        databaseReference.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@android.support.annotation.NonNull DataSnapshot dataSnapshot) {
-                teamArrayList.clear();
-                Log.d("FirebaseData", "DataSnapshot content: " + dataSnapshot.toString());
-
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    Log.d("FirebaseData", "Snapshot: " + snapshot.toString());
-
-                    String arena = snapshot.child("Arena").getValue(String.class);
-                    String codename = snapshot.child("Codename").getValue(String.class);
-                    String location = snapshot.child("Location").getValue(String.class);
-                    String teamname = snapshot.child("TeamName").getValue(String.class);
-
-                    NBATeam nbaTeam = new NBATeam();
-                    nbaTeam.setArena(arena);
-                    nbaTeam.setLocation(location);
-                    nbaTeam.setTeamName(teamname);
-                    nbaTeam.setCodename(codename);
-
-                    teamArrayList.add(nbaTeam);
-                }
-                Log.d("FirebaseData", "Number of teams added: " + teamArrayList.size());
-            }
-            @Override
-            public void onCancelled(@android.support.annotation.NonNull DatabaseError error) {
-                Toast.makeText(getActivity(), "Error: " + error.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });
+    try {
+        if (teamArrayList.isEmpty()) {
+            loadTeam();
+        }
+        newupload = false;
+        Log.d("TEDD","DH PERNAH UPLOAD");
+    }catch (NullPointerException e){
+        teamArrayList = new ArrayList<>();
+        loadTeam();
+        newupload = true;
+        Log.d("TEDD","BARU UPLOAD");
+    }
 
         // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.mapbox, container, false);
@@ -106,7 +88,9 @@ public class MapFragment extends Fragment {
                 googleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
 
                 //Call method to set Coordinates into each team details
-                getCords();
+                if (newupload) {
+                    getCords();
+                }
 
                 for (NBATeam team : teamArrayList) {
                     String codename = team.getCodename().toLowerCase();
@@ -131,8 +115,6 @@ public class MapFragment extends Fragment {
                                 .title(team.getTeamName());
                         googleMap.addMarker(mo);
                     }
-
-                    Dialog mDialog = new Dialog(getContext());
 
                     googleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
                         @Override
@@ -161,10 +143,9 @@ public class MapFragment extends Fragment {
         });
 
 
-
         toRoute = view.findViewById(R.id.journey);
         toRoute.setOnClickListener(view -> {
-            GraphTraverse fragment = new GraphTraverse();
+            GraphTraverse fragment = new GraphTraverse(getContext(),teamArrayList);
             getParentFragmentManager().beginTransaction().replace(R.id.main,fragment).addToBackStack(null).commit();
         });
         return view;
@@ -253,6 +234,40 @@ public class MapFragment extends Fragment {
         arenatext.setText("Arena: " + team.getArena());
 
         mDialog.show();
+    }
+
+    private void loadTeam(){
+        databaseReference = FirebaseDatabase.getInstance().getReference().child("team");
+        databaseReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@android.support.annotation.NonNull DataSnapshot dataSnapshot) {
+                teamArrayList.clear();
+                Log.d("FirebaseData", "DataSnapshot content: " + dataSnapshot.toString());
+
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    Log.d("FirebaseData", "Snapshot: " + snapshot.toString());
+
+                    String arena = snapshot.child("Arena").getValue(String.class);
+                    String codename = snapshot.child("Codename").getValue(String.class);
+                    String location = snapshot.child("Location").getValue(String.class);
+                    String teamname = snapshot.child("TeamName").getValue(String.class);
+
+                    NBATeam nbaTeam = new NBATeam();
+                    nbaTeam.setArena(arena);
+                    nbaTeam.setLocation(location);
+                    nbaTeam.setTeamName(teamname);
+                    nbaTeam.setCodename(codename);
+
+                    teamArrayList.add(nbaTeam);
+                }
+                Log.d("FirebaseData", "Number of teams added: " + teamArrayList.size());
+            }
+
+            @Override
+            public void onCancelled(@android.support.annotation.NonNull DatabaseError error) {
+                Toast.makeText(getActivity(), "Error: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
 

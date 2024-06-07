@@ -19,9 +19,9 @@ public class ContractAdapter extends RecyclerView.Adapter<ContractAdapter.ViewHo
     Context context;
     ArrayList<PlayerInfo> list;
 
-    public ContractAdapter(Context context, ArrayList<PlayerInfo> list) {
+    public ContractAdapter(Context context, ArrayList<PlayerInfo> queue) {
+        this.list = queue;
         this.context = context;
-        this.list = list;
     }
 
     @NonNull
@@ -35,19 +35,12 @@ public class ContractAdapter extends RecyclerView.Adapter<ContractAdapter.ViewHo
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         PlayerInfo data = list.get(position);
         holder.playerName.setText(data.getName());
+        holder.score.setText(data.getPoints());
         String imageURL = data.getPhoto();
         Glide.with(holder.itemView.getContext())
                 .load(imageURL)
                 .placeholder(R.drawable.player_dunking)
                 .into(holder.profileImage);
-
-        /*holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                int clickedPosition = holder.getAdapterPosition();
-                showInjuryDialog(holder, clickedPosition);
-            }
-        });*/
     }
 
     @Override
@@ -57,12 +50,13 @@ public class ContractAdapter extends RecyclerView.Adapter<ContractAdapter.ViewHo
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         ImageView profileImage;
-        TextView playerName;
+        TextView playerName,score;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             profileImage = itemView.findViewById(R.id.profileImage);
             playerName = itemView.findViewById(R.id.playerNameTV);
+            score = itemView.findViewById(R.id.pointsTV);
         }
     }
 }

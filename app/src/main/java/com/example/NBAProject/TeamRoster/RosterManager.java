@@ -1,67 +1,67 @@
 package com.example.NBAProject.TeamRoster;
 
+import android.util.Log;
+
+import androidx.annotation.NonNull;
+
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Queue;
+import java.util.PriorityQueue;
 import java.util.Stack;
 
+//This Java Class is responsible for most of the team management's
+//mechanism includes importing data, updating database, removing and adding players.
+
 public class RosterManager {
-    private long currentSalary = 0;
-    private final int MAX_SALARY = 20000;
+    private long balance = 20000;
     private final int MAX_PLAYERS = 15;
     private ArrayList<PlayerInfo> roster;
     private Stack<PlayerInfo> injuryReserve;
-    private Queue<PlayerInfo> contractExtensionQueue;
-    private String teamName;
-    private String teamCity;
-    private int salaryCap;
+    private PriorityQueue<PlayerInfo> contractExtensionQueue;
     private int currentNumberOfPlayers; // Variable to store the number of players fetched from Firebase
 
     private static RosterManager instance;
 
-    DatabaseReference database;
+    FirebaseDatabase database;
 
-    public RosterManager(String teamName, String teamCity, int salaryCap) {
-        this.teamName = teamName;
-        this.teamCity = teamCity;
-        this.salaryCap = salaryCap;
+    public RosterManager() {
         this.roster = new ArrayList<>();
         this.injuryReserve = new Stack<>();
-        this.contractExtensionQueue = new LinkedList<>();
+        this.contractExtensionQueue = new PriorityQueue<>();
 
         // Initialize Firebase Database reference
-        database = FirebaseDatabase.getInstance().getReference();
+        database = FirebaseDatabase.getInstance();
 
-        // Fetch current number of players and current salary from Firebase
-        //fetchCurrentNumberOfPlayersFromFirebase();
-        //fetchCurrentSalaryFromFirebase();
+        //Import players assigned to Injury reserve and Contract Queue into its respective collection
+        importInjury();
+        importContract();
+        //Get the balance from the Database
+        getBalanceFromDatabase();
+
+        currentNumberOfPlayers = roster.size();
     }
 
-    public void setCurrentSalary(Long currentSalary){
-        this.currentSalary = currentSalary;
-    }
-
+    // This method is an implementation of the Singleton pattern (only a single instance of a class exists throughout an application)
+    // Any classes can have access to same instance (all Java class can retrieve the same instance), thus preventing any confusion in passing data.
     public static RosterManager getInstance() {
+        //For first time call (opening the app), the instance is null, thus a new RosterManager is instantiated
         if (instance == null) {
-            instance = new RosterManager("Default Team", "Default City", 20000);
+            instance = new RosterManager();
         }
+        //For non-first time call, return the instance that have been created once.
         return instance;
-    }
-
-    public static void initializeInstance(String teamName, String teamCity, int salaryCap) {
-        if (instance == null) {
-            instance = new RosterManager(teamName, teamCity, salaryCap);
-        }
     }
 
     public boolean addPlayer(PlayerInfo player) {
         if (!contains(player) && salaryPass(player.getSalary()) && !isFull()) {
             roster.add(player);
-            currentSalary += player.getSalary();
+            balance -= player.getSalary();
+
             saveRoster(); // Save updated roster to Firebase
             saveCurrentSalary();
             saveCurrentPlayers();
@@ -69,15 +69,6 @@ public class RosterManager {
         } else {
             return false;
         }
-    }
-
-    public boolean addPlayers(List<PlayerInfo> players) {
-        for (PlayerInfo player : players) {
-            if (!addPlayer(player)) {
-                return false;
-            }
-        }
-        return true;
     }
 
     public boolean contains(PlayerInfo player) {
@@ -89,190 +80,62 @@ public class RosterManager {
     }
 
     public boolean salaryPass(long salary) {
-        return (currentSalary + salary) <= MAX_SALARY;
-    }
-
-    public void checkPositionalRequirement() {
-        int guards = 0, forwards = 0, centers = 0;
-        for (PlayerInfo player : this.roster) {
-            String position = player.getPOS();
-            switch (position) {
-                case "Guard":
-                    guards++;
-                    break;
-                case "Forward":
-                    forwards++;
-                    break;
-                case "Center":
-                    centers++;
-                    break;
-                default:
-                    break;
-            }
-        }
-
-        if (guards >= 2)
-            System.out.println("GUARD: " + guards);
-        else
-            System.out.println("MUST ADD " + (2 - guards) + " MORE GUARD!");
-
-        if (forwards >= 2)
-            System.out.println("FORWARD: " + forwards);
-        else
-            System.out.println("MUST ADD " + (2 - forwards) + " MORE FORWARD!");
-
-        if (centers >= 2)
-            System.out.println("CENTER: " + centers);
-        else
-            System.out.println("MUST ADD " + (2 - centers) + " MORE CENTER!");
-    }
-
-    public boolean removePlayer(String playerName) {
-        PlayerInfo toRemove = null;
-        for (PlayerInfo player : this.roster) {
-            if (player.getName().equals(playerName)) {
-                toRemove = player;
-                break;
-            }
-        }
-
-        if (toRemove == null) {
-            System.out.println(playerName + " not found in the team roster.");
-            return false;
-        }
-
-        // Log the roster before removal
-        System.out.println("Roster before removal:");
-        displayRoster();
-
-        // Update the currentSalary before removing the player
-        currentSalary -= toRemove.getSalary();
-
-        this.roster.remove(toRemove);
-        System.out.println("Successfully removed " + playerName + " from team roster.");
-
-        // Log the roster after removal
-        System.out.println("Roster after removal:");
-        displayRoster();
-
-        System.out.println("Current salary:" + currentSalary);
-
-        return true;
+        return salary <= balance;
     }
 
     public void removePlayerFromRoster(PlayerInfo player){
         if(!roster.isEmpty()){
             roster.remove(player);
-            currentSalary -= player.getSalary();
+            balance += player.getSalary();
             saveRoster(); // Save updated roster to Firebase
             saveCurrentSalary();
             saveCurrentPlayers();
         }
     }
 
-    public boolean removeLastPlayer() {
-        if (!roster.isEmpty()) {
-            PlayerInfo toRemove = roster.get(roster.size() - 1);
-            roster.remove(roster.size() - 1);
-            currentSalary -= toRemove.getSalary();
-            System.out.println("Successfully removed " + toRemove.getName() + " from team roster.");
-            return true;
-        } else {
-            System.out.println("The roster is empty. No player to remove.");
-            return false;
-        }
+    public boolean checkExistInjury(PlayerInfo player){
+        return injuryReserve.contains(player);
     }
 
-    private boolean isTeamValid() {
-        int guards = 0, forwards = 0, centers = 0;
-        for (PlayerInfo player : this.roster) {
-            String position = player.getPOS();
-            switch (position) {
-                case "Guard":
-                    guards++;
-                    break;
-                case "Forward":
-                    forwards++;
-                    break;
-                case "Center":
-                    centers++;
-                    break;
-                default:
-                    break;
-            }
-        }
-        return guards >= 2 && forwards >= 2 && centers >= 2;
-    }
+
 
     public void addToInjuryReserve(PlayerInfo player, String injury) {
-        player.setInjuryDescription(injury);
-        injuryReserve.push(player);
-        System.out.println("Player: " + player.getName() + " added to Injury Reserve with Injury: " + injury);
-        saveInjuryReserve(); // Save updated injury reserve to Firebase
+        if(!injuryReserve.contains(player)) {
+            player.setInjuryDescription(injury);
+            injuryReserve.push(player);
+            saveInjuryReserve(injuryReserve.peek(), true); // Save updated injury reserve to Firebase
+        }
     }
 
     public void removeFromInjuryReserve(PlayerInfo player) {
-        if (!injuryReserve.isEmpty()) {
-            injuryReserve.pop();
-            System.out.println("Player: " + player.getName() + " removed from Injury Reserve.");
-            saveInjuryReserve(); // Save updated injury reserve to Firebase
-        } else {
-            System.out.println(player.getName() + " is not ready to be removed from Injury Reserve.");
-        }
+            saveInjuryReserve(player,false); // Save updated injury reserve to Firebase
+
     }
 
-    public void displayInjuredPlayers() {
-        if (injuryReserve.isEmpty()) {
-            System.out.println("Injury Reserve is empty.");
-        } else {
-            System.out.println("Injured Players:");
-            for (PlayerInfo player : injuryReserve) {
-                System.out.println(player.getName() + " - Injury: " + player.getInjuryDescription());
-            }
-        }
-    }
-
-    public void displayRoster() {
-        if (roster.isEmpty()) {
-            System.out.println("Team Roster is empty.");
-        } else {
-            System.out.println("THE OFFICIAL ROSTER:");
-            for (PlayerInfo player : roster) {
-                System.out.println(player.getName() + " - " + player.getPOS() + " - $" + player.getSalary());
-            }
-        }
-    }
 
     public void addToContractExtensionQueue(PlayerInfo player) {
         contractExtensionQueue.offer(player);
-        System.out.println("Player: " + player.getName() + " added to Contract Extension Queue.");
-        saveContractExtensionQueue();
+        saveContractExtensionQueue(player,true);
     }
 
-    public void removeFromContractExtensionQueue(PlayerInfo player) {
+    public void removeFromContractExtensionQueue() {
         if (!contractExtensionQueue.isEmpty()) {
-            contractExtensionQueue.poll();
-            System.out.println("Player: " + player.getName() + " removed from Contract Extension Queue.");
-            saveContractExtensionQueue();
-        } else {
-            System.out.println("Contract extension queue is empty or " + player.getName() + " is not at the top of the queue.");
+            PlayerInfo player = contractExtensionQueue.remove();
+            saveContractExtensionQueue(player,false);
         }
     }
 
     public ArrayList<PlayerInfo> getRoster() {
         return this.roster;
     }
-
     public Stack<PlayerInfo> getInjuryReserve() {
         return this.injuryReserve;
     }
-
-    public Queue<PlayerInfo> getContractPlayers() {
+    public PriorityQueue<PlayerInfo> getContractPlayers() {
         return this.contractExtensionQueue;
     }
-
-    public Long getCurrentSalary() {
-        return this.currentSalary;
+    public Long getBalance() {
+        return this.balance;
     }
 
     private void saveRoster() {
@@ -280,34 +143,110 @@ public class RosterManager {
 
         // Loop through each player in the roster
         for (PlayerInfo player : roster) {
-            String playerName = player.getName(); // Get the playerName
+            String playerName = sanitizePlayerName(player.getName());
             rosterRef.child(playerName).setValue(player); // Use playerName as the key
         }
     }
 
-    private void saveInjuryReserve() {
+    public void importInjury(){
+        //Refers to the injuryReserve node from Database
         DatabaseReference injury = FirebaseDatabase.getInstance().getReference("injuryReserve");
 
-        // Loop through each player in the injury reserve
-        for (PlayerInfo player : injuryReserve) {
-            String playerName = player.getName(); // Get the playerName
-            injury.child(playerName).setValue(player); // Use playerName as the key
+        //Special case for Stack:
+        //By default, Firebase sorts its nodes (player's name) alphabetically which means that when importing from the
+        //injuryReserve node, the new order may defers from the order it was inserted before
+        //However, in a stack, the order of the element must not be neglected.
+        //As a solution, PlayerInfo object are assigned with unique timestamp for the sole purpose of chronological sorting
+        //PlayerInfo objects are inserted based on its timestamp order.
+        injury.orderByChild("timestamp").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                injuryReserve.clear();
+                for (DataSnapshot dataSnapshot : snapshot.getChildren()){
+                    Log.d("HAFIZ","APA NI" + dataSnapshot);
+                    PlayerInfo data = dataSnapshot.getValue(PlayerInfo.class);
+                    if (data != null) {
+                        injuryReserve.add(data);
+                    }
+                }
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+            }
+        });
+    }
+
+    public void importContract(){
+        DatabaseReference contractQueue = FirebaseDatabase.getInstance().getReference("contractQueue");
+        contractQueue.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                contractExtensionQueue.clear();
+                for (DataSnapshot dataSnapshot : snapshot.getChildren()){
+                    Log.d("HAFIZ","APA NI" + dataSnapshot);
+                    PlayerInfo data = dataSnapshot.getValue(PlayerInfo.class);
+                    if (data != null) {
+                        contractExtensionQueue.add(data);
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
+
+
+    }
+    public void saveInjuryReserve(PlayerInfo player, boolean add) {
+        DatabaseReference injury = FirebaseDatabase.getInstance().getReference("injuryReserve");
+        String playername = player.getName();
+        player.setTimestamp(System.currentTimeMillis());
+        if(add){
+            injury.child(playername).setValue(player);
+        }
+        else {
+            injury.child(playername).removeValue();
         }
     }
 
-    private void saveContractExtensionQueue() {
+    public void saveContractExtensionQueue(PlayerInfo player, boolean add) {
         DatabaseReference contract = FirebaseDatabase.getInstance().getReference("contractQueue");
-
-        // Loop through each player in the contract extension queue
-        for (PlayerInfo player : contractExtensionQueue) {
-            String playerName = player.getName(); // Get the playerName
-            contract.child(playerName).setValue(player); // Use playerName as the key
+        String playername = player.getName();
+        if(add){
+            contract.child(playername).setValue(player);
         }
+        else{
+            contract.child(playername).removeValue();
+        }
+
+    }
+
+    public void getBalanceFromDatabase() {
+        DatabaseReference ref = database.getReference("currentSalary");
+        ref.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    balance = dataSnapshot.getValue(Long.class);
+                }
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                System.err.println("Error getting data: " + databaseError.getMessage());
+            }
+        });
     }
 
     private void saveCurrentSalary() {
         DatabaseReference rosterRef = FirebaseDatabase.getInstance().getReference("currentSalary");
-        rosterRef.setValue(currentSalary);
+        rosterRef.setValue(balance);
+    }
+
+    public int getCurrentPlayersfrom(){
+        return currentNumberOfPlayers;
     }
 
     private void saveCurrentPlayers() {
@@ -315,17 +254,8 @@ public class RosterManager {
         rosterRef.setValue(roster.size());
     }
 
-    public List<PlayerInfo> compilePlayers(){
-        List<PlayerInfo> allplayers = new ArrayList<>();
-        allplayers.addAll(roster);
-
-        allplayers.addAll(injuryReserve);
-        allplayers.addAll(contractExtensionQueue);
-
-
-        return allplayers;
+    //Firebase can't receive some special characters when trying to read/write, thus names need to be replaced
+    public String sanitizePlayerName(String playerName) {
+        return playerName.replaceAll("[.$\\[\\]#\\/]", "_");
     }
-
-
-
 }

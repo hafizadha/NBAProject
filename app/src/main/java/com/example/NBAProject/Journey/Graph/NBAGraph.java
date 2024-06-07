@@ -9,7 +9,9 @@ package com.example.NBAProject.Journey.Graph;
  * @author Hafiz
  */
 public class NBAGraph {
-    
+
+
+    //Build an weighted NBA map from the question using the WeightedGraph class
     private WeightedGraph nbamap;
     public NBAGraph(){
         this.nbamap = new WeightedGraph();
@@ -44,10 +46,12 @@ public class NBAGraph {
         nbamap.addEdge(Heat, Celtics, 3045);
     }
 
+    //Get the start location of the map (SPURS)
     public Vertex getStartingVertex() {
 		return this.nbamap.getVertices().get(0);
 	}
-    
+
+    //Get specific vertex by referencing the target String (team name)
     public Vertex getSpecificVertex(String target) {
             for(Vertex location: nbamap.getVertices()){
                 if(target.equals(location.getData())){

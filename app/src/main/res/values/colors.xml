@@ -5,7 +5,7 @@
     <color name="purple_700">#FF3700B3</color>
     <color name="teal_200">#FF03DAC5</color>
     <color name="teal_700">#FF018786</color>
-    <color name="black">#FF000000</color>
+    <color name="black">#252525</color>
     <color name="white">#FFFFFFFF</color>
 
     <color name="colorPrimary">#fff</color>
@@ -24,5 +24,6 @@
     <color name="NBAblue">#17408B</color>
     <color name="NBARed">#C9082A</color>
     <color name="LightGray">#f0f0f0</color>
+    <color name="DarkerGray">#999999</color>
 
 </resources>

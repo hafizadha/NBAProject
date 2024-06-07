@@ -7,24 +7,17 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.LinearLayout;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.NBAProject.R;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
-import java.util.Queue;
+import java.util.PriorityQueue;
 
 public class ContractQueue extends Fragment {
     View view;
@@ -32,8 +25,8 @@ public class ContractQueue extends Fragment {
     RecyclerView recyclerView;
     Button renew;
     ContractAdapter contractAdapter;
-
-    private ArrayList<PlayerInfo> contractList;
+    PriorityQueue<PlayerInfo> contractList;
+    ArrayList<PlayerInfo> contractArray;
 
     Context context;
 
@@ -42,20 +35,25 @@ public class ContractQueue extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.contractqueue,container,false);
 
-        LinearLayout linearLayout = view.findViewById(R.id.main);
-
         rosterManager = RosterManager.getInstance();
+
         context=getContext();
 
-        // Fetch data from Firebase
-        fetchDataFromFirebase();
 
-        //contractList = getContractPlayersFromRosterManager();
-        contractList = new ArrayList<>();
+        contractList = new PriorityQueue<>();
+
+        contractList = rosterManager.getContractPlayers();
+        Log.d("TEST","NULL X" + contractList.isEmpty());
+
+        contractArray = new ArrayList<>(contractList);
+
+        for(PlayerInfo p: contractArray){
+            Log.d("DEDE","NAME: " + p.getPoints());
+        }
 
         recyclerView = view.findViewById(R.id.contractQueue);
-        recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 3)); // 3 columns
-        contractAdapter = new ContractAdapter(getContext(),contractList);
+        recyclerView.setLayoutManager(new LinearLayoutManager(context));
+        contractAdapter = new ContractAdapter(context,contractArray);
         recyclerView.setAdapter(contractAdapter);
 
         renew = view.findViewById(R.id.renewButton);
@@ -65,68 +63,15 @@ public class ContractQueue extends Fragment {
             public void onClick(View view) {
                 if (!contractList.isEmpty()) {
                     // Remove the top player from the local injury list
-                    PlayerInfo data = contractList.remove(0);
-                    String playerId = data.getName();
-                    removePlayerFromFirebase(playerId);
-
+                    PlayerInfo data = contractList.remove();
+                    contractArray.remove(data);
                     // Remove the player from the injury reserve stack and add them back to the roster
-                    rosterManager.removeFromContractExtensionQueue(data);
+                    rosterManager.saveContractExtensionQueue(data,false);
                     contractAdapter.notifyDataSetChanged();
                 }
             }
         });
 
         return view;
-
-
-    }
-
-
-    private void removePlayerFromFirebase(String playerId) {
-        DatabaseReference myRef = FirebaseDatabase.getInstance().getReference("contractQueue");
-
-        if (playerId != null) {
-            myRef.child(playerId).removeValue().addOnCompleteListener(task -> {
-                if (task.isSuccessful()) {
-                    Log.d("Firebase", "Player info removed successfully.");
-                    Toast.makeText(context, "Player removed successfully.", Toast.LENGTH_SHORT).show();
-                } else {
-                    Log.d("Firebase", "Failed to remove player info.");
-                    Toast.makeText(context, "Failed to remove player.", Toast.LENGTH_SHORT).show();
-                }
-            });
-        }
-    }
-
-    private void fetchDataFromFirebase() {
-        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("contractQueue");
-        databaseReference.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                contractList.clear();
-                for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                    PlayerInfo data = dataSnapshot.getValue(PlayerInfo.class);
-                    if (data != null) {
-                        contractList.add(data);
-                    }
-                }
-                contractAdapter.notifyDataSetChanged();
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                Log.e("Roster", "Failed to read data from Firebase", error.toException());
-            }
-        });
-    }
-
-    private ArrayList<PlayerInfo> getContractPlayersFromRosterManager() {
-        ArrayList<PlayerInfo> contractPlayers = new ArrayList<>();
-        Queue<PlayerInfo> contractQueue = rosterManager.getContractPlayers();
-
-        for (PlayerInfo player : contractQueue) {  // Iterating over a Stack<PlayerInfo>
-            contractPlayers.add(player);
-        }
-        return contractPlayers;
     }
 }
