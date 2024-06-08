@@ -75,7 +75,7 @@
                     android:id="@+id/activePlayers"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_marginLeft="225dp"
+                    android:layout_marginLeft="185dp"
                     android:text="1"
                     android:textColor="@color/black"
                     android:textSize="20dp" />
@@ -100,7 +100,7 @@
                     android:id="@+id/inactives"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="211dp"
+                    android:layout_marginLeft="171dp"
                     android:text="1"
                     android:textColor="@color/black"
                     android:textSize="20dp" />
@@ -126,7 +126,7 @@
                     android:id="@+id/Guards"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="227dp"
+                    android:layout_marginLeft="187dp"
                     android:text="1"
                     android:textColor="@color/black"
                     android:textSize="20dp" />
@@ -151,7 +151,7 @@
                     android:id="@+id/centerplayers"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="222dp"
+                    android:layout_marginLeft="182dp"
                     android:text="1"
                     android:textColor="@color/black"
                     android:textSize="20dp" />
@@ -176,7 +176,7 @@
                     android:id="@+id/Forward"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="207dp"
+                    android:layout_marginLeft="167dp"
                     android:text="-"
                     android:textColor="@color/black"
                     android:textSize="20dp" />

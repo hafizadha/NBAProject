@@ -176,12 +176,12 @@ public class MarketPage extends Fragment {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 list.clear();
-
+                    //Iterate throught the nodes under the 'players' references
                     for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                         // Initialize a new getName instance
                         PlayerInfo playerdetails = new PlayerInfo();
 
-
+                        //Getting values from each node
                         Integer height = snapshot.child("Height").getValue(Integer.class);
                         Integer weight = snapshot.child("Weight").getValue(Integer.class);
                         String age = snapshot.child("Age").getValue(String.class);
@@ -268,16 +268,13 @@ public class MarketPage extends Fragment {
                         Toast.makeText(getContext(), "No Player Found", Toast.LENGTH_SHORT).show();
                     }
                 }
-
+            //If any error regarding importing data, display message
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
                 Toast.makeText(getActivity(), "Error: " + error.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
-
-
     }
-
 
     //Generic method that can only take of Number Class
     //This method will evaluate comparision

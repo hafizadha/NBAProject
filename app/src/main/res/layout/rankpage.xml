@@ -2,37 +2,38 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="700dp"
     android:background="@color/white"
     android:id="@+id/container">
 
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="572dp"
+        android:layout_height="725dp"
         android:orientation="vertical">
 
         <LinearLayout
-            android:background="@drawable/linebottom"
             android:layout_width="match_parent"
             android:layout_height="80dp"
-            android:orientation="horizontal"
-            android:gravity="center_vertical">
+            android:background="@drawable/linebottom"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
 
             <ImageView
                 android:layout_width="20dp"
                 android:layout_height="25dp"
                 android:layout_marginLeft="10dp"
                 android:layout_marginRight="5dp"
-                android:src="@drawable/backbutton"/>
+                android:src="@drawable/backbutton" />
 
             <LinearLayout
                 android:layout_width="40dp"
                 android:layout_height="40dp"
-                android:background="@drawable/bigicon"
-                android:padding="5dp"
                 android:layout_marginLeft="8dp"
-                android:orientation="horizontal">
+                android:background="@drawable/bigicon"
+                android:orientation="horizontal"
+                android:padding="5dp">
+
                 <ImageView
 
                     android:layout_width="match_parent"
@@ -50,13 +51,11 @@
                 android:layout_height="40dp"
 
                 android:layout_marginLeft="10dp"
-                android:text="RANKING"
-                android:gravity="center_vertical"
-                android:textColor="@color/black"
                 android:fontFamily="@font/inlanders_demo"
-                android:textSize="32dp"
-                />
-
+                android:gravity="center_vertical"
+                android:text="RANKING"
+                android:textColor="@color/black"
+                android:textSize="32dp" />
 
 
         </LinearLayout>
@@ -66,7 +65,7 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rankAdapter"
         android:layout_width="match_parent"
-        android:layout_height="763dp"
+        android:layout_height="647dp"
         android:layout_marginTop="80dp"
         android:background="@color/white"
         android:paddingLeft="30dp" />

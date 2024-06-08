@@ -3,25 +3,29 @@
 
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="250dp"
-    android:layout_height="25dp"
+    android:layout_width="302dp"
+    android:layout_height="40dp"
     android:orientation="horizontal"
-    android:background="@drawable/curve"
-    android:layout_marginLeft="20dp">
+    android:background="@drawable/linebottom"
+    >
 
     <ImageView
         android:id="@+id/teamlogo"
-        android:layout_width="25dp"
+        android:layout_width="40dp"
+
         android:layout_height="match_parent"
+        android:layout_marginLeft="10dp"
         />
 
     <TextView
+        android:paddingTop="12dp"
         android:id="@+id/cityname"
+        android:fontFamily="@font/jeju"
         android:layout_width="250dp"
         android:textColor="@color/black"
         android:layout_height="match_parent"
-        android:layout_marginLeft="3dp"
-        android:textSize="15sp"
+        android:layout_marginLeft="10dp"
+        android:textSize="14sp"
         android:text="TextView" />
 </LinearLayout>
 

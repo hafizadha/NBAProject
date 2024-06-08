@@ -126,13 +126,14 @@ public class GraphTraverse extends Fragment {
         }
         recyclerView = view.findViewById(R.id.cities);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        routeAdapter = new RouteAdapter(sortedCities);
+        routeAdapter = new RouteAdapter(context,sortedCities);
         recyclerView.setAdapter(routeAdapter);
+
 
         routeAdapter.notifyDataSetChanged();
 
         distance = view.findViewById(R.id.totaldistance);
-        distance.setText("TOTAL DISTANCE" + pathdistance1);
+        distance.setText(String.valueOf(pathdistance1));
     }
 
 
@@ -141,7 +142,7 @@ public class GraphTraverse extends Fragment {
     private void showNearestNeighborTSPResult() {
         List<Integer> route = nearestNeighborTSP();
         if (route != null) {
-            int pathdistance1 = 0;
+            pathdistance1 = 0;  // Reset the path distance
             for (int i = 0; i < route.size(); i++) {
                 int cityIndex = route.get(i);
                 cityorder.add(CITY_NAMES[cityIndex]);
@@ -149,8 +150,6 @@ public class GraphTraverse extends Fragment {
                     pathdistance1 += DISTANCES[route.get(i)][route.get(i + 1)];
                 }
             }
-
-
         } else {
             textView1.setText("No valid route found.");
             textView1.setVisibility(View.VISIBLE);
@@ -203,6 +202,7 @@ public class GraphTraverse extends Fragment {
         }
         return -1;
     }
+
 
     //Closes the Dropdown view
     private void hideAllViews() {

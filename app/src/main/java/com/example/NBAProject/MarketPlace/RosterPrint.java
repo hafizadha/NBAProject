@@ -34,31 +34,26 @@ public class RosterPrint extends Fragment {
 
 
 
+
     public static RosterPrint newInstance(ArrayList<? extends PlayerInfo> arrayList) {
         RosterPrint fragment = new RosterPrint();
-        Bundle args = new Bundle();
-        args.putSerializable(ARG_ARRAY_LIST, dataList); // Pass the ArrayList
-        fragment.setArguments(args);
+        Bundle args = new Bundle();// Bundle to hold fragment arguments
+        args.putSerializable(ARG_ARRAY_LIST, dataList); // Pass the ArrayList as a serializable
+        fragment.setArguments(args);// Set the arguments for the fragment
         return fragment;
     }
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            dataList = (ArrayList<PlayerInfo>) getArguments().getSerializable(ARG_ARRAY_LIST); // Retrieve the ArrayList of custom objects
-        }
-    }
+
 
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.rosterprint, container, false);
 
-        // Fetch data from Firebase
+        // Fetch roster data from Firebase
         fetchDataFromFirebase();
 
         dataList = new ArrayList<>();
 
-        //RecyclerView
+        //Get thee recycler view's reference from the inflated layout and generate items using PrintAdapter
         recyclerView = view.findViewById(R.id.teamList);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         adapter = new PrintAdapter(dataList);
@@ -69,7 +64,6 @@ public class RosterPrint extends Fragment {
 
         // Add the item decoration to the RecyclerView
         recyclerView.addItemDecoration(itemDecoration);
-
 
         return view;
 

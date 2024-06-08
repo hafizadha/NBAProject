@@ -1,6 +1,5 @@
 package com.example.NBAProject.MarketPlace;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,10 +18,14 @@ import java.util.List;
 public class PrintAdapter extends RecyclerView.Adapter<PrintAdapter.MyViewHolder> {
     private List<? extends PlayerInfo> list;
 
+    //Constructor with List of players as parameters
     public PrintAdapter(List<? extends PlayerInfo> dataList) {
         this.list = dataList;
     }
 
+
+    //onCreateViewHolder only creates a new view holder when there are no existing view holders which the RecyclerView can reuse.
+    //If RecyclerView can display 5 items at a time, it will create 5 ViewHolders, and then automatically reuse them, each time calling onBindViewHolder.
     @NonNull
     @Override
     public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -35,7 +38,7 @@ public class PrintAdapter extends RecyclerView.Adapter<PrintAdapter.MyViewHolder
     public void onBindViewHolder(@NonNull PrintAdapter.MyViewHolder holder, int position) {
         PlayerInfo playerInfo = list.get(position);
 
-        // Setting Age as text
+        // Displaying the attributes of player by setting the texts
         holder.age.setText(String.format("Age:%s", playerInfo.getAge()));
         holder.points.setText(String.format("Points:%s", playerInfo.getPoints()));
         holder.assist.setText(String.format("Assist:%s", playerInfo.getAssist()));
@@ -48,16 +51,16 @@ public class PrintAdapter extends RecyclerView.Adapter<PrintAdapter.MyViewHolder
 
         holder.name.setText(playerInfo.getName());
         holder.pos.setText("Position:" + playerInfo.getPOS());
-        String imageURL = playerInfo.getPhoto();
-        Log.d("Image URL", "URL: " + imageURL);
 
+        String imageURL = playerInfo.getPhoto();
+
+        //Setting the profile picture using imageURL, use local resource, if unavailable
         Glide.with(holder.itemView.getContext())
                 .load(imageURL)
                 .placeholder(R.drawable.player_dunking) // Optional placeholder
                 .into(holder.profileImg);
 
-
-
+        //Use local resource, if profile photo URL is null
         if (imageURL != null && !imageURL.isEmpty()) {
 
         } else {
@@ -65,12 +68,14 @@ public class PrintAdapter extends RecyclerView.Adapter<PrintAdapter.MyViewHolder
         }
     }
 
+    //Return size of adapter
     @Override
     public int getItemCount() {
         return list.size();
     }
 
     public static class MyViewHolder extends RecyclerView.ViewHolder {
+        //Components inside the Layout
         ImageView profileImg;
         TextView name,age,assist,height,pos,points,reb,salary,steal,weight,block;
         public MyViewHolder(@NonNull View itemView) {

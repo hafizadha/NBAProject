@@ -32,6 +32,7 @@ import java.util.Arrays;
 //None of the basic features can be found here
 public class NavigationBar extends AppCompatActivity implements DrawerAdapter.OnItemSelectedListener {
 
+    //Position of the icons ( determines which shows when clicked )
     private final int POS_Team = 0;
     private final int POS_Market = 1;
     private final int POS_Journey = 2;
@@ -165,8 +166,5 @@ public class NavigationBar extends AppCompatActivity implements DrawerAdapter.On
         return ContextCompat.getColor(this, res);
     }
 
-    @Override
-    protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
-        super.onRestoreInstanceState(savedInstanceState);
-    }
+
 }

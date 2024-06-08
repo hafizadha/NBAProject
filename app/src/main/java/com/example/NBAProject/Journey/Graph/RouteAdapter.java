@@ -1,8 +1,10 @@
 package com.example.NBAProject.Journey.Graph;
 
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -15,9 +17,11 @@ import java.util.ArrayList;
 
 //Generate the UI of order of cities visited sorted by the two algorithms
 public class RouteAdapter extends RecyclerView.Adapter<RouteAdapter.MyViewHolder> {
+    Context context;
     private ArrayList<NBATeam> nbaTeams;
-    public RouteAdapter(ArrayList<NBATeam> dataList) {
+    public RouteAdapter(Context context,ArrayList<NBATeam> dataList) {
         this.nbaTeams = dataList;
+        this.context = context;
     }
 
 
@@ -33,8 +37,12 @@ public class RouteAdapter extends RecyclerView.Adapter<RouteAdapter.MyViewHolder
         NBATeam team = nbaTeams.get(position);
         String cityname = team.getLocation();
 
+        int resid = team.getResourceid();
+
+
         // Setting Age as text
         holder.city.setText(String.format(cityname));
+        holder.TeamLogo.setImageResource(resid);
 
     }
 
@@ -45,16 +53,23 @@ public class RouteAdapter extends RecyclerView.Adapter<RouteAdapter.MyViewHolder
 
     public static class MyViewHolder extends RecyclerView.ViewHolder {
         TextView city;
+        ImageView TeamLogo;
 
 
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
 
             city = itemView.findViewById(R.id.cityname);
+            TeamLogo = itemView.findViewById(R.id.teamlogo);
 
         }
 
 
     }
+
+    public static int getResourceId(String resourceName, String resourceType, Context context) {
+        return context.getResources().getIdentifier(resourceName, resourceType, context.getPackageName());
+    }
+
 
 }
