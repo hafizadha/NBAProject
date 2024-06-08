@@ -57,6 +57,10 @@ THE BASIC REQUIREMENTS OF THE TOPIC CAN BE FOUND IN THESE JAVA CLASSES :-
   - PerformanceRanking.java
 
 Extra features :-
--
+- 2.1 Data Scraping
+ - Done seperately from the main codebase
+ - Data Scraping folder
 
+- 2.2 GUI
+- 2.3 Database
 
