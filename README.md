@@ -13,10 +13,10 @@ MarketPlace Package:
   - TestAdapter.java
 
 1.2 Add Player
-MarketPlace Package:
-  -RosterPrint.java
-  -PrintAdapter.java
-TeamRoster Package:
+- MarketPlace Package:
+  - RosterPrint.java
+  - PrintAdapter.java
+- TeamRoster Package:
   - TestAdapter.java:
   - RosterManager.java:
 
