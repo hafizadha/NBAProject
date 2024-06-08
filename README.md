@@ -6,7 +6,8 @@ IMPORTANT NOTE:
   - Code must be run in Android Studio IDE 
   - JSONs file must be manually imported into the Firestore's Realtime Database
 
-THE BASIC REQUIREMENTS OF THE TOPIC CAN BE FOUND IN THESE JAVA CLASSES:
+THE BASIC REQUIREMENTS OF THE TOPIC CAN BE FOUND IN THESE JAVA CLASSES :-
+
 1.1 Build a championship contender team:
 - MarketPlace Package:
   - MarketPage.java
