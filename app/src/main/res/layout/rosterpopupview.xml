@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/container"
+    android:layout_width="300dp"
+    android:layout_height="250dp"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:background="@drawable/radius"
+    android:layout_gravity="center">
+
+
+    <LinearLayout
+
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="1dp"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_marginTop="16dp"
+            android:id="@+id/selectedPlayer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:paddingBottom="10dp"
+            android:layout_gravity="center"
+            android:text="NAME"
+            android:textColor="@color/black"
+            android:textSize="26dp"
+            android:background="@drawable/linebottom"
+            android:textStyle="bold" />
+
+        <Button
+            android:id="@+id/removePlayer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/linebottom"
+            android:gravity="center"
+            android:text="Remove Player"
+            android:textColor="@color/NBAblue"
+            android:textSize="16dp" />
+
+    </LinearLayout>
+
+    <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/linebottom"
+
+            android:orientation="horizontal">
+
+
+            <Button
+                android:id="@+id/addInjury"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/linebottom"
+                android:gravity="center"
+                android:text="Add to Injury"
+                android:textColor="@color/NBAblue"
+                android:textSize="16dp" />
+
+    </LinearLayout>
+
+    <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/linebottom"
+
+            android:orientation="horizontal">
+
+
+            <Button
+                android:id="@+id/addQueue"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/linebottom"
+                android:gravity="center"
+
+                android:text="Add to Contract"
+                android:textColor="@color/NBAblue"
+                android:textSize="16dp" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="20dp"
+        android:background="@drawable/curve">
+    </LinearLayout>
+
+
+    </LinearLayout>
