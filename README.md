@@ -8,7 +8,7 @@ IMPORTANT NOTE:
 
 THE BASIC REQUIREMENTS OF THE TOPIC CAN BE FOUND IN THESE JAVA CLASSES:
 1.1 Build a championship contender team:
-MarketPlace Package:
+- MarketPlace Package:
   - MarketPage.java
   - TestAdapter.java
 
@@ -21,39 +21,41 @@ MarketPlace Package:
   - RosterManager.java:
 
 1.3 Remove Player
-TeamRoster Package:
-  -RosterManagement.java
-  -TestAdapteer.java
+- TeamRoster Package:
+  - RosterManagement.java
+  - TestAdapteer.java
 
 1.4 Dynamic Searching
-Marketplace Package:
-  -MarketPage.java
-  -SearchPage.java
+- Marketplace Package:
+  - MarketPage.java
+  - SearchPage.java
 
 1.5 Construct the NBA Cities
-Journey Package:
+- Journey Package:
   - Edge.java
   - Vertex.java
   - WeightedGraph.java
   - NBAGraph.java
 
 1.6 Crafting the Journey
-Journey Package:
+- Journey Package:
   - GraphTraverse.java
 
 1.7 Injury Reserve Management:
-TeamRoster Package:
+- TeamRoster Package:
   - RosterManagement.java
   - InjuryStack.java
 
 1.8 Contract Extension Queue
-TeamRoster Package:
+- TeamRoster Package:
   - RosterManagement.java
   - ContractQueue.java
 
 1.9 Player Performance Ranking 
-TeamRoster Package:
-  -PerformanceRanking.java
+- TeamRoster Package:
+  - PerformanceRanking.java
 
+Extra features :-
+-
 
 
