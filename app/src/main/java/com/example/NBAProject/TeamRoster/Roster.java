@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -31,13 +32,14 @@ public class Roster extends Fragment {
     View view;
 
     RecyclerView recyclerView;
-    TextView textView1, textView2, guards, forwards, centers;
-    Button button, button2, button3, button4;
+    TextView textView1;
+    ImageButton button, button2, button3;
+    Button button4;
     TestAdapter adapter;
     ArrayList<PlayerInfo> dataList;
     RosterManager rosterManager;
     SwipeRefreshLayout swipeRefreshLayout;
-    int Guards,Centers,Forwards;
+
 
     Context context;
 
@@ -46,31 +48,33 @@ public class Roster extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.teamrosterpage, container, false);
 
+        //getActivity since this fragment is not the child of any other fragment
         context = getActivity();
 
+        // Fetch data from Firebase
         fetchDataFromFirebase();
 
+        // Fetch saved salary from Firebase
         fetchCurrentSalaryFromFirebase();
-
         dataList = new ArrayList<>();
-
         rosterManager = RosterManager.getInstance(dataList.size());
-        Log.d("APA NI","WHAY TJE FUCK " + dataList.size());
+
+
+
+
+        button = view.findViewById(R.id.toRank);
+        button2 = view.findViewById(R.id.toInjury);
+        button3 = view.findViewById(R.id.toContract);
+
+        button.setImageDrawable(context.getDrawable(R.drawable.trophybutton));
+        button2.setImageDrawable(context.getDrawable(R.drawable.medicalbutton));
+        button3.setImageDrawable(context.getDrawable(R.drawable.contractbutton));
+
+
 
         textView1 = view.findViewById(R.id.currentSalary);
-        textView2 = view.findViewById(R.id.playerStatus);
-        guards = view.findViewById(R.id.guardsTV);
-        forwards = view.findViewById(R.id.forwardsTV);
-        centers = view.findViewById(R.id.centersTV);
-        button = view.findViewById(R.id.removeButton);
-        button2 = view.findViewById(R.id.GoToStack);
-        button3 = view.findViewById(R.id.GoToQueue);
         button4 = view.findViewById(R.id.GoToStatus);
         swipeRefreshLayout = view.findViewById(R.id.container);
-
-        // Fetch saved salary from Firebase
-
-        // Fetch data from Firebase
 
         recyclerView = view.findViewById(R.id.teamList);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -82,9 +86,8 @@ public class Roster extends Fragment {
 
         // Add the item decoration to the RecyclerView
         recyclerView.addItemDecoration(itemDecoration);
-
-
         swipeRefreshLayout.setOnRefreshListener(this::fetchDataFromFirebase);
+
 
         button.setOnClickListener(view -> {
             Bundle bundle = new Bundle();
@@ -117,6 +120,59 @@ public class Roster extends Fragment {
         AlertDialog dialog = new AlertDialog.Builder(context)
                 .setView(dialogView)
                 .create();
+        int totalplayers = dataList.size();
+        int inactivePlayers = RosterManager.getInstance().getInactivePlayers();
+        int activePlayers = totalplayers - inactivePlayers;
+
+
+        TextView totaldisplay = dialogView.findViewById(R.id.totaldisplay);
+        TextView activedisplay = dialogView.findViewById(R.id.activePlayers);
+        TextView inactivedisplay = dialogView.findViewById(R.id.inactives);
+        TextView centerdis = dialogView.findViewById(R.id.centerplayers);
+        TextView guarddis = dialogView.findViewById(R.id.Guards);
+        TextView forwarddis = dialogView.findViewById(R.id.Forward);
+
+
+
+        totaldisplay.setText(String.valueOf(totalplayers));
+        activedisplay.setText(String.valueOf(activePlayers));
+        inactivedisplay.setText(String.valueOf(inactivePlayers));
+
+
+        totaldisplay.setTextColor(context.getResources().getColor(totalplayers <10 ? R.color.NBARed : R.color.green));
+        activedisplay.setTextColor(context.getResources().getColor(activePlayers <10 ? R.color.NBARed : R.color.green));
+        inactivedisplay.setTextColor(context.getResources().getColor(inactivePlayers <10 ? R.color.NBARed : R.color.green));
+
+        int Guards = 0,Centers = 0,Forwards = 0;
+
+        for (PlayerInfo player : dataList) {
+            switch (player.getPOS()) {
+                case "SG":
+                case "PG":
+                    Guards++;
+                    break;
+                case "SF":
+                case "PF":
+                    Forwards++;
+                    break;
+                default:
+                    Centers++;
+                    break;
+            }
+        }
+        guarddis.setText(String.valueOf(Guards));
+        forwarddis.setText(String.valueOf(Forwards));
+        centerdis.setText(String.valueOf(Centers));
+
+        // Set text color for guards
+        guarddis.setTextColor(context.getResources().getColor(Guards >= 2 ? R.color.black : R.color.NBARed));
+
+        // Set text color for forwards
+        forwarddis.setTextColor(context.getResources().getColor(Forwards >= 2 ? R.color.black : R.color.NBARed));
+
+        // Set text color for centers
+        centerdis.setTextColor(context.getResources().getColor(Centers >= 2 ? R.color.black : R.color.NBARed));
+
 
         dialog.show();
     }
@@ -156,8 +212,6 @@ public class Roster extends Fragment {
 
         // Update current salary TextView
         textView1.setText(String.valueOf(totalSalary));
-        textView2.setText(isFull() ? "FULL" : "NOT FULL");
-        updatePositions();
 
         // Save the updated salary to Firebase
         saveSalaryToFirebase();
@@ -223,36 +277,4 @@ public class Roster extends Fragment {
         });
     }
 
-
-    public void updatePositions() {
-        Guards = 0;Centers = 0;Forwards = 0;
-
-        for (PlayerInfo player : dataList) {
-            switch (player.getPOS()) {
-                case "SG":
-                case "PG":
-                    Guards++;
-                    break;
-                case "SF":
-                case "PF":
-                    Forwards++;
-                    break;
-                default:
-                    Centers++;
-                    break;
-            }
-        }
-        guards.setText("Guards: " + Guards);
-        forwards.setText("Forwards: " + Forwards);
-        centers.setText("Centers: " + Centers);
-
-        // Set text color for guards
-        guards.setTextColor(context.getResources().getColor(Guards >= 2 ? R.color.green : R.color.black));
-
-        // Set text color for forwards
-        forwards.setTextColor(context.getResources().getColor(Forwards >= 2 ? R.color.green : R.color.black));
-
-        // Set text color for centers
-        centers.setTextColor(context.getResources().getColor(Centers >= 2 ? R.color.green : R.color.black));
-    }
 }

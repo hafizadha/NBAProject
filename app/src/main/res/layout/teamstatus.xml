@@ -47,7 +47,7 @@
                     android:textSize="20dp" />
 
                 <TextView
-                    android:id="@+id/totalPlayers"
+                    android:id="@+id/totaldisplay"
                     android:layout_width="30dp"
                     android:layout_height="match_parent"
                     android:layout_marginLeft="125dp"
@@ -97,7 +97,7 @@
                     android:textSize="20dp" />
 
                 <TextView
-                    android:id="@+id/inactivePlayers"
+                    android:id="@+id/inactives"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="211dp"

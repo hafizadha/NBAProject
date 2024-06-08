@@ -119,6 +119,10 @@ public class RosterManager {
     public boolean checkExistInjury(PlayerInfo player){
         return injuryReserve.contains(player);
     }
+
+    public boolean checkExistContract(PlayerInfo player){
+        return contractExtensionQueue.contains(player);
+    }
     public void addToInjuryReserve(PlayerInfo player, String injury) {
         if(!injuryReserve.contains(player)) {
             player.setInjuryDescription(injury);
@@ -266,9 +270,22 @@ public class RosterManager {
         rosterRef.setValue(balance);
     }
 
-    public int getCurrentPlayersfrom(){
+    public int getNumberOfPlayers(){
         return currentNumberOfPlayers;
     }
+    public int getInactivePlayers(){
+        int dupe = 0;
+        for(PlayerInfo playerInfo: injuryReserve){
+            for(PlayerInfo playerInfo1:contractExtensionQueue){
+                if(playerInfo1.getName().equals(playerInfo.getName())){
+                    dupe++;
+                }
+            }
+        }
+
+        return injuryReserve.size() + contractExtensionQueue.size() -dupe;
+    }
+
 
     private void saveCurrentPlayers() {
         DatabaseReference rosterRef = FirebaseDatabase.getInstance().getReference("NoOfPlayers");

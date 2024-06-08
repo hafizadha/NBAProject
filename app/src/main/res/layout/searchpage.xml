@@ -15,7 +15,7 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="200dp"
+        android:layout_height="217dp"
         android:background="@color/NBAblue"
         android:orientation="horizontal">
 
@@ -26,62 +26,62 @@
 
             <EditText
                 android:id="@+id/editTextHeight"
-                android:background="@drawable/radius"
                 android:layout_width="140dp"
                 android:layout_height="25dp"
                 android:layout_marginLeft="10dp"
                 android:layout_marginTop="30dp"
                 android:layout_marginRight="10dp"
+                android:background="@drawable/radius"
                 android:fontFamily="@font/cyberformtitleital"
-                android:textAlignment="center"
                 android:hint="Height"
-                android:textColorHint="@color/black"
+                android:textAlignment="center"
                 android:textColor="@color/black"
+                android:textColorHint="@color/black"
                 android:textSize="20sp" />
 
             <EditText
                 android:id="@+id/editTextWeight"
-                android:background="@drawable/radius"
                 android:layout_width="140dp"
                 android:layout_height="25dp"
                 android:layout_marginLeft="10dp"
                 android:layout_marginTop="10dp"
                 android:layout_marginRight="10dp"
+                android:background="@drawable/radius"
                 android:fontFamily="@font/cyberformtitleital"
-                android:textAlignment="center"
                 android:hint="Weight"
-                android:textColorHint="@color/black"
+                android:textAlignment="center"
                 android:textColor="@color/black"
+                android:textColorHint="@color/black"
                 android:textSize="20sp" />
 
             <EditText
                 android:id="@+id/editTextSalary"
-                android:background="@drawable/radius"
                 android:layout_width="140dp"
                 android:layout_height="25dp"
                 android:layout_marginLeft="10dp"
                 android:layout_marginTop="10dp"
                 android:layout_marginRight="10dp"
+                android:background="@drawable/radius"
                 android:fontFamily="@font/cyberformtitleital"
-                android:textAlignment="center"
                 android:hint="Salary"
-                android:textColorHint="@color/black"
+                android:textAlignment="center"
                 android:textColor="@color/black"
+                android:textColorHint="@color/black"
                 android:textSize="20sp" />
 
             <EditText
                 android:id="@+id/editTextPosition"
-                android:background="@drawable/radius"
                 android:layout_width="140dp"
                 android:layout_height="25dp"
                 android:layout_marginLeft="10dp"
                 android:layout_marginTop="10dp"
                 android:layout_marginRight="10dp"
+                android:background="@drawable/radius"
                 android:fontFamily="@font/cyberformtitleital"
-                android:textAlignment="center"
                 android:hint="Position"
-                android:textColorHint="@color/black"
+                android:textAlignment="center"
                 android:textColor="@color/black"
+                android:textColorHint="@color/black"
                 android:textSize="20sp" />
 
 
@@ -100,44 +100,44 @@
 
                 <EditText
                     android:id="@+id/heightcond"
-                    android:background="@drawable/radius"
                     android:layout_width="50dp"
                     android:layout_height="25dp"
                     android:layout_marginLeft="10dp"
                     android:layout_marginTop="30dp"
                     android:layout_marginRight="10dp"
+                    android:background="@drawable/radius"
                     android:fontFamily="@font/cyberformtitleital"
                     android:textAlignment="center"
-                    android:textColorHint="@color/black"
                     android:textColor="@color/black"
+                    android:textColorHint="@color/black"
                     android:textSize="20sp" />
 
                 <EditText
                     android:id="@+id/weightcond"
-                    android:background="@drawable/radius"
                     android:layout_width="50dp"
                     android:layout_height="25dp"
                     android:layout_marginLeft="10dp"
                     android:layout_marginTop="10dp"
                     android:layout_marginRight="10dp"
+                    android:background="@drawable/radius"
                     android:fontFamily="@font/cyberformtitleital"
                     android:textAlignment="center"
-                    android:textColorHint="@color/black"
                     android:textColor="@color/black"
+                    android:textColorHint="@color/black"
                     android:textSize="20sp" />
 
                 <EditText
                     android:id="@+id/salarycond"
-                    android:background="@drawable/radius"
                     android:layout_width="50dp"
                     android:layout_height="25dp"
                     android:layout_marginLeft="10dp"
                     android:layout_marginTop="10dp"
                     android:layout_marginRight="10dp"
+                    android:background="@drawable/radius"
                     android:fontFamily="@font/cyberformtitleital"
                     android:textAlignment="center"
-                    android:textColorHint="@color/black"
                     android:textColor="@color/black"
+                    android:textColorHint="@color/black"
                     android:textSize="20sp" />
 
 
@@ -153,7 +153,7 @@
                 android:id="@+id/buttonFilter"
                 android:layout_width="match_parent"
                 android:layout_height="177dp"
-                android:src="@drawable/basketball_button" />
+                android:src="@drawable/searchicon" />
         </LinearLayout>
 
 

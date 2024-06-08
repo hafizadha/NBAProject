@@ -1,32 +1,85 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:background="@color/purple_500"
+    android:background="@color/white"
     android:id="@+id/container">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="RENEW CONTRACT"
-        android:textSize="30dp"
-        android:textColor="@color/white"
-        android:textStyle="bold"
-        android:layout_marginLeft="100dp"/>
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/contractQueue"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="294dp"
-        android:layout_margin="10dp" />
+        android:layout_height="683dp"
+        android:orientation="vertical">
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/renewButton"
-        android:layout_marginLeft="190dp"
-        android:text="RENEW"/>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:background="@drawable/linebottom"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="25dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="5dp"
+                android:src="@drawable/backbutton" />
+
+            <LinearLayout
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginLeft="8dp"
+                android:background="@drawable/bigicon"
+                android:orientation="horizontal"
+                android:padding="5dp">
+
+                <ImageView
+
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
 
 
-</LinearLayout>
+                    android:background="@color/NBAblue"
+                    app:srcCompat="@drawable/contractbig" />
+
+
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="250dp"
+                android:layout_height="40dp"
+
+                android:layout_marginLeft="10dp"
+                android:fontFamily="@font/inlanders_demo"
+                android:gravity="center_vertical"
+                android:text="Contract"
+                android:textColor="@color/black"
+                android:textSize="32dp" />
+
+
+        </LinearLayout>
+
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/contractPlayers"
+            android:layout_width="match_parent"
+            android:layout_height="556dp"
+
+            android:background="@color/white"
+            android:paddingLeft="30dp" />
+
+        <Button
+            android:id="@+id/renewButton"
+            android:layout_width="100dp"
+            android:layout_height="40dp"
+            android:layout_gravity="center"
+            android:background="@drawable/button"
+            android:text="Renew"
+            android:textColor="@color/white"
+            android:textSize="16dp" />
+
+    </LinearLayout>
+
+
+</FrameLayout>

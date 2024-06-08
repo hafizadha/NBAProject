@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.NBAProject.R;
+import com.example.NBAProject.VerticalSpaceItemDecoration;
 
 import java.util.ArrayList;
 import java.util.PriorityQueue;
@@ -51,10 +52,16 @@ public class ContractQueue extends Fragment {
             Log.d("DEDE","NAME: " + p.getPoints());
         }
 
-        recyclerView = view.findViewById(R.id.contractQueue);
+        recyclerView = view.findViewById(R.id.contractPlayers);
         recyclerView.setLayoutManager(new LinearLayoutManager(context));
         contractAdapter = new ContractAdapter(context,contractArray);
         recyclerView.setAdapter(contractAdapter);
+
+        int verticalSpace = 60; // 50 pixels of space
+        VerticalSpaceItemDecoration itemDecoration = new VerticalSpaceItemDecoration(verticalSpace);
+
+        // Add the item decoration to the RecyclerView
+        recyclerView.addItemDecoration(itemDecoration);
 
         renew = view.findViewById(R.id.renewButton);
 

@@ -10,7 +10,6 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.bumptech.glide.Glide;
 import com.example.NBAProject.R;
 
 import java.util.ArrayList;
@@ -18,6 +17,9 @@ import java.util.ArrayList;
 //Shows the ranking of Players based on their composite score
 public class RankAdapter extends RecyclerView.Adapter<RankAdapter.MyViewHolder> {
     Context context;
+    boolean firstplace = true;
+    boolean secondplace = true;
+    boolean thirdplace = true;
     ArrayList<PlayerInfo> list;
     public RankAdapter(Context context, ArrayList<PlayerInfo> list) {
         this.context = context;
@@ -35,16 +37,23 @@ public class RankAdapter extends RecyclerView.Adapter<RankAdapter.MyViewHolder> 
     public void onBindViewHolder(@NonNull RankAdapter.MyViewHolder holder, int position) {
         PlayerInfo playerInfo = list.get(position);
 
+
         //Setting values for components in the layout of each player card
         holder.score.setText(String.format("%s", playerInfo.getCompositeScore()));
         holder.name.setText(playerInfo.getName());
+        holder.ranknumber.setText(String.valueOf(position+1));
 
-        String imageURL = playerInfo.getPhoto();
 
-        Glide.with(holder.itemView.getContext())
-                .load(imageURL)
-                .placeholder(R.drawable.player_dunking) // Optional placeholder
-                .into(holder.profileImg);
+        if(firstplace){
+            holder.rankicon.setImageDrawable(context.getDrawable(R.drawable.goldmedal));
+            firstplace = false;
+        }else if(secondplace){
+            holder.rankicon.setImageDrawable(context.getDrawable(R.drawable.silvermedal));
+            secondplace = false;
+        }else if(thirdplace){
+            holder.rankicon.setImageDrawable(context.getDrawable(R.drawable.bronzemedal));
+            thirdplace = false;
+        }
 
     }
 
@@ -57,16 +66,17 @@ public class RankAdapter extends RecyclerView.Adapter<RankAdapter.MyViewHolder> 
 
         //Components inside the layout
         //Only relevant information are to be displayed.
-        ImageView profileImg;
-        TextView name,score;
+        ImageView rankicon;
+        TextView name,score,ranknumber;
 
 
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
             //References from the layout
-            profileImg = itemView.findViewById(R.id.profileImage);
+            ranknumber = itemView.findViewById(R.id.rankNumber);
             name = itemView.findViewById(R.id.playerNameTV);
             score = itemView.findViewById(R.id.scoreTV);
+            rankicon = itemView.findViewById(R.id.rankicon);
         }
 
 

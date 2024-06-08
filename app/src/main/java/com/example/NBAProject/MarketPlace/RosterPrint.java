@@ -14,7 +14,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.NBAProject.R;
 import com.example.NBAProject.TeamRoster.PlayerInfo;
-import com.example.NBAProject.TeamRoster.RosterManager;
 import com.example.NBAProject.VerticalSpaceItemDecoration;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -24,13 +23,13 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 
+//Basic requirement 3.2 can be found here (printing roster after addition)
 public class RosterPrint extends Fragment {
-
     View view;
     RecyclerView recyclerView;
     PrintAdapter adapter;
     static ArrayList<PlayerInfo> dataList;
-    RosterManager rosterManager;
+
     private static final String ARG_ARRAY_LIST = "array_list";
 
 
@@ -54,14 +53,12 @@ public class RosterPrint extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.rosterprint, container, false);
 
-        rosterManager = RosterManager.getInstance();
-
-
         // Fetch data from Firebase
         fetchDataFromFirebase();
 
         dataList = new ArrayList<>();
 
+        //RecyclerView
         recyclerView = view.findViewById(R.id.teamList);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         adapter = new PrintAdapter(dataList);
@@ -74,12 +71,11 @@ public class RosterPrint extends Fragment {
         recyclerView.addItemDecoration(itemDecoration);
 
 
-
-
         return view;
 
     }
 
+    //Import the current roster from the database ( Data is stored right after addition of player)
     private void fetchDataFromFirebase() {
         DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("roster");
         databaseReference.addValueEventListener(new ValueEventListener() {
@@ -94,7 +90,6 @@ public class RosterPrint extends Fragment {
                 }
                 adapter.notifyDataSetChanged();
             }
-
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
                 Log.e("Roster", "Failed to read data from Firebase", error.toException());

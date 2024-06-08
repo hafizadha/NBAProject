@@ -22,9 +22,11 @@ public class VerticalSpaceItemDecoration extends RecyclerView.ItemDecoration {
     public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
         super.getItemOffsets(outRect, view, parent, state);
 
-        // Add spacing to the bottom of each item except for the last one
-        if (parent.getChildAdapterPosition(view) != parent.getAdapter().getItemCount() - 1) {
-            outRect.bottom = verticalSpaceHeight;
+        // Add spacing to the bottom of each item
+        outRect.bottom = verticalSpaceHeight;
+        // Add pacing to the top of the first item
+        if(parent.getChildAdapterPosition(view) == 0){
+            outRect.top = verticalSpaceHeight;
         }
     }
 }

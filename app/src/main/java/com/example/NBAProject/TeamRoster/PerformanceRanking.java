@@ -47,7 +47,7 @@ public class PerformanceRanking extends Fragment {
         adapter = new RankAdapter(getContext(),players);
         recyclerView.setAdapter(adapter);
 
-        int verticalSpace = 50; // 50 pixels of space
+        int verticalSpace = 60; // 50 pixels of space
         VerticalSpaceItemDecoration itemDecoration = new VerticalSpaceItemDecoration(verticalSpace);
 
         // Add the item decoration to the RecyclerView
@@ -139,12 +139,13 @@ public class PerformanceRanking extends Fragment {
 
         // Refer to the player's position, and assign weightage to evaluate performance
         // Refer to report, for more details on how each position is considered
-        if(positions.contains("G")){
-            weights = new double[]{10, 10, 15, 15, 10};
-        }else if(positions.contains("F")){
-            weights = new double[]{12, 12, 12, 12, 12};
-        }else if(positions.contains("C")){
-            weights = new double[]{10, 15, 10, 10, 15};
+        // Weightage
+        if(positions.contains("G")){ //guards- heavier weightage on assists and steals
+            weights = new double[]{0.1, 0.1, 0.35, 0.35, 0.1};
+        }else if(positions.contains("F")){ //forward- balanced weightage
+            weights = new double[]{0.2, 0.2, 0.2, 0.2, 0.2};
+        }else if(positions.contains("C")){ //centre- heavier weightage on rebounds and blocks
+            weights = new double[]{0.1, 0.35, 0.1, 0.1, 0.35};
         }else{
             System.out.println("Invalid position.");
             return 0.0;

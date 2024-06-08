@@ -38,6 +38,8 @@ public class GraphTraverse extends Fragment {
     private static int pathdistance1 = 0;
 
     //For Nearest Neighbour Algorithm
+    //2D Distance matrix, where the order are arranged accordingly (from the city_names matrix, starting with Spurs)
+    //INF represents INFINITE distance, showing that there's no connecting edge between the cities
     private final int[][] DISTANCES = {
             {0, INF, INF, INF, INF, 500, 1137, INF, 678, 983},
             {INF, 0, INF, INF, 554, INF, INF, 1507, 2214, INF},
@@ -86,15 +88,16 @@ public class GraphTraverse extends Fragment {
                         generateRecyclerView(cityorder,pathdistance1);
                         break;
                     case 1:
-                        cityorder = new ArrayList<>();
-                        NBAGraph test = new NBAGraph();
-                        pathdistance1 = 0;
+                        cityorder = new ArrayList<>();//Create new arraylist to be displayed
+                        NBAGraph test = new NBAGraph(); //Create an instance NBAGraph constructed from Weighted Graph
+                        pathdistance1 = 0;//Set path distance back to 0 for new calculation
 
-                        Vertex startingVertex = test.getStartingVertex();
-                        ArrayList<Vertex> visitedVertices1 = new ArrayList<>();
-                        visitedVertices1.add(startingVertex);
-                        depthFirstTraversal(startingVertex, visitedVertices1);
+                        Vertex startingVertex = test.getStartingVertex(); //Get the starting vertex (SPURS) from the custom graph
+                        ArrayList<Vertex> visitedVertices1 = new ArrayList<>();//Create instance of visitedVertices
+                        visitedVertices1.add(startingVertex); //Add the first city ( indicating that this is the initial city)
+                        depthFirstTraversal(startingVertex, visitedVertices1); //Call DFS method with starting city and visited cities as parameters
 
+                        //Generate result in front end
                         generateRecyclerView(cityorder,pathdistance1);
 
                         break;
@@ -201,31 +204,38 @@ public class GraphTraverse extends Fragment {
         return -1;
     }
 
+    //Closes the Dropdown view
     private void hideAllViews() {
         textView1.setVisibility(View.GONE);
         textView2.setVisibility(View.GONE);
     }
 
 
+
     //DFS Algorithm
     public void depthFirstTraversal(Vertex start, ArrayList<Vertex> visitedVertices) {
         int totalteam = 10;
         int leafnodeweight = 0;
-        cityorder.add(start.getData());
+        cityorder.add(start.getData()); //Store the first city into the city order, store the next order of city if recursion is called
 
+        //Assuming all vertex is a leaf node
         boolean isLeaf = true;
 
+        //Iterate through all edges of the vertex
         for (Edge e : start.getEdges()){
-            leafnodeweight = e.getWeight();
-            Vertex neighbor = e.getEnd();
+            leafnodeweight = e.getWeight(); //Get distance between them
+            Vertex neighbor = e.getEnd(); //Get the destination city (next vertex)
 
+            //If the destination city has not been visited
             if (!visitedVertices.contains(neighbor)) {
+                //Get its source city ( similar to Vertex start)
                 Vertex prev = e.getStart();
 
                 //Refer back to it previous vertex
                 for(Edge e2: prev.getEdges()){
-                    //If the vertex
-                    if(!visitedVertices.contains(e2)){
+                    //If the vertex's edges has neighbouring cities that has not been visited
+                    //It indicates that the vertex is not a leaf node
+                    if(!visitedVertices.contains(e2.getEnd())){
                         isLeaf =false;
                     }
                 }
@@ -240,6 +250,8 @@ public class GraphTraverse extends Fragment {
         if (isLeaf) {
             System.out.println("Reached a leaf node: " + start.getData());
 
+            //If the size is equal to the total team (10), indicates that the vertex is the last leaf node
+            //Thus, do not need to calculate the distance to its origin city again
             if(visitedVertices.size() != totalteam){
                 pathdistance1 += leafnodeweight;
             }

@@ -4,13 +4,11 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.bumptech.glide.Glide;
 import com.example.NBAProject.R;
 
 import java.util.ArrayList;
@@ -35,12 +33,8 @@ public class ContractAdapter extends RecyclerView.Adapter<ContractAdapter.ViewHo
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         PlayerInfo data = list.get(position);
         holder.playerName.setText(data.getName());
-        holder.score.setText(data.getPoints());
-        String imageURL = data.getPhoto();
-        Glide.with(holder.itemView.getContext())
-                .load(imageURL)
-                .placeholder(R.drawable.player_dunking)
-                .into(holder.profileImage);
+        holder.points.setText(data.getPoints());
+
     }
 
     @Override
@@ -49,14 +43,12 @@ public class ContractAdapter extends RecyclerView.Adapter<ContractAdapter.ViewHo
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        ImageView profileImage;
-        TextView playerName,score;
+        TextView playerName,points;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-            profileImage = itemView.findViewById(R.id.profileImage);
-            playerName = itemView.findViewById(R.id.playerNameTV);
-            score = itemView.findViewById(R.id.pointsTV);
+            playerName = itemView.findViewById(R.id.contractName);
+            points = itemView.findViewById(R.id.PointsTV);
         }
     }
 }

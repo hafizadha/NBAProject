@@ -27,9 +27,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
-
+// Basic requirements 3.1, 3.2 and 3.4 can be found here
 public class MarketPage extends Fragment {
-
     //Parameters passed by Search Page
     private int minHeight;
     private int minWeight;
@@ -56,6 +55,7 @@ public class MarketPage extends Fragment {
     //Crucial in handling the team roster
     RosterManager rosterManager;
 
+    //Empty constructor to instantiate fragment from Main Activity
     public MarketPage() {
     }
 
@@ -181,8 +181,6 @@ public class MarketPage extends Fragment {
                         // Initialize a new getName instance
                         PlayerInfo playerdetails = new PlayerInfo();
 
-                        //BIAR DULU
-                        String profilePhoto = snapshot.child("profilePhoto").getValue(String.class);
 
                         Integer height = snapshot.child("Height").getValue(Integer.class);
                         Integer weight = snapshot.child("Weight").getValue(Integer.class);
@@ -244,9 +242,8 @@ public class MarketPage extends Fragment {
                             matches = false; // If position doesn't match, it fails
                         }
 
-                        //If all condition matchers, then player is added into the list
+                        //If all condition matches, then player is added into the list
                         if (matches) {
-                            playerdetails.setPhoto(profilePhoto);
                             playerdetails.setPOS(position);
                             playerdetails.setName(name);
 

@@ -1,14 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/container"
     android:layout_width="wrap_content"
     android:layout_height="match_parent">
 
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
+    <LinearLayout
         android:id="@+id/rosterLayout"
+        android:scaleY="1"
+        android:scaleX="1"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context=".Roster"
@@ -16,160 +18,113 @@
         android:background="@color/white">
 
         <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:layout_marginTop="10dp"
+            android:layout_width="400dp"
+            android:layout_height="42dp"
+            android:orientation="horizontal"
+            android:background="@drawable/linebottom"
+            >
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="CURRENT SALARY:"
+                android:text="BALANCE:"
+                android:fontFamily="@font/play_pretend"
                 android:textColor="@color/black"
-                android:textSize="14dp"
-                android:layout_marginLeft="5dp"/>
+                android:textSize="20dp"
+                android:layout_marginLeft="8dp"/>
 
             <TextView
-                android:layout_width="wrap_content"
+                android:layout_width="150dp"
                 android:layout_height="wrap_content"
                 android:textColor="@color/black"
-                android:textSize="14dp"
+                android:fontFamily="@font/jeju"
+                android:textSize="18dp"
                 android:layout_marginLeft="8dp"
                 android:id="@+id/currentSalary"/>
 
-            <TextView
+            <Button
+                android:background="@drawable/button"
+                android:id="@+id/GoToStatus"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="STATUS:"
-                android:textColor="@color/black"
+                android:layout_height="35dp"
+                android:text="STATUS"
+                android:textColor="@color/white"
                 android:textSize="14dp"
-                android:layout_marginLeft="80dp"/>
+                />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
 
-                android:textColor="@color/black"
-                android:textSize="14dp"
-                android:layout_marginLeft="5dp"
-                android:id="@+id/playerStatus"/>
 
         </LinearLayout>
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/teamList"
             android:layout_width="match_parent"
-            android:layout_height="500dp"
+            android:layout_height="608dp"
+            android:background="@color/white"
+            android:paddingLeft="8dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            android:layout_margin="8dp" />
+            app:layout_constraintTop_toTopOf="parent" />
 
         <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="REMOVE PLAYER"
-                android:textSize="15dp"
-                android:layout_marginLeft="20dp"
-                android:layout_marginTop="0dp"
-                android:id="@+id/removeButton"/>
-
-            <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Stack list"
-                android:textSize="15dp"
-                android:layout_marginLeft="5dp"
-                android:layout_marginTop="0dp"
-                android:id="@+id/GoToStack"/>
-
-            <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Contract Queue"
-                android:textSize="15dp"
-                android:layout_marginLeft="0dp"
-                android:layout_marginTop="0dp"
-                android:id="@+id/GoToQueue"/>
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="10dp"
+            android:layout_width="360dp"
+            android:layout_height="60dp"
             android:orientation="horizontal"
-            android:layout_marginTop="0dp">
-            <!--
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Guards:"
-                android:textColor="@color/white"
-                android:textSize="25dp"
-                android:layout_marginLeft="15dp"/> -->
+            android:background="@drawable/button">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="@color/white"
+            <LinearLayout
+                android:layout_width="120dp"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:gravity="center">
 
-                android:textSize="30dp"
-                android:layout_marginLeft="25dp"
-                android:id="@+id/guardsTV"/>
-            <!--
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Forwards:"
-                android:textColor="@color/white"
-                android:layout_marginLeft="10dp"
-                android:textSize="25dp"/> -->
+                <ImageButton
+                    android:id="@+id/toRank"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:layout_gravity="center"
+                    android:background="@color/NBAblue"
+                    android:scaleX="0.7"
+                    android:scaleY="0.7"/>
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="@color/white"
+            </LinearLayout>
 
-                android:textSize="25dp"
-                android:layout_marginLeft="5dp"
-                android:id="@+id/forwardsTV"/>
-            <!--
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Centers:"
-                android:textColor="@color/white"
-                android:layout_marginLeft="10dp"
-                android:textSize="25dp"/> -->
+            <LinearLayout
+                android:layout_width="120dp"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:gravity="center">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="@color/white"
+                <ImageButton
+                    android:id="@+id/toInjury"
+                   android:background="@color/NBAblue"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:layout_gravity="center"
+                    />
 
-                android:textSize="25dp"
-                android:layout_marginLeft="5dp"
-                android:id="@+id/centersTV"/>
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="120dp"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:gravity="center">
+
+                <ImageButton
+                    android:id="@+id/toContract"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:layout_gravity="center"
+                    android:background="@color/NBAblue"
+                    />
+
+            </LinearLayout>
 
         </LinearLayout>
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <Button
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="RANKING"
-                android:id="@+id/GoToStatus"/>
-
-
-        </LinearLayout>
 
     </LinearLayout>
 </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

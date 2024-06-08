@@ -13,10 +13,8 @@ public class SimpleItem extends DrawerItem<SimpleItem.ViewHolder> {
 
     private int selectedItemIconTint;
     private int selectedItemTextTint;
-
     private int normalItemIconTint;
     private int normalItemTextTint;
-
     private Drawable icon;
     private String title;
 

@@ -6,13 +6,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.bumptech.glide.Glide;
 import com.example.NBAProject.R;
 
 import java.util.Random;
@@ -40,20 +38,8 @@ public class InjuryAdapter extends RecyclerView.Adapter<InjuryAdapter.ViewHolder
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         PlayerInfo data = list.get(position);
         holder.playerName.setText(data.getName());
-        String imageURL = data.getPhoto();
-        Glide.with(holder.itemView.getContext())
-                .load(imageURL)
-                .placeholder(R.drawable.player_dunking)
-                .into(holder.profileImage);
-
-        holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View view) {
-                int clickedPosition = holder.getAdapterPosition();
-                showInjuryDialog(holder, clickedPosition);
-                return true; // Return true to indicate that the long click event is consumed
-            }
-        });
+        holder.orderno.setText(String.valueOf(position+1));
+        holder.injurydesc.setText(data.getInjuryDescription());
 
     }
 
@@ -86,13 +72,13 @@ public class InjuryAdapter extends RecyclerView.Adapter<InjuryAdapter.ViewHolder
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        ImageView profileImage;
-        TextView playerName;
+        TextView playerName,injurydesc,orderno;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-            profileImage = itemView.findViewById(R.id.profileImage);
+            orderno = itemView.findViewById(R.id.orderNumber);
             playerName = itemView.findViewById(R.id.playerNameTV);
+            injurydesc = itemView.findViewById(R.id.injurydesc);
         }
     }
 }

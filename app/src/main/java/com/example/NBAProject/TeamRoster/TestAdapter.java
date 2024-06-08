@@ -3,6 +3,8 @@ package com.example.NBAProject.TeamRoster;
 
 import android.app.AlertDialog;
 import android.content.Context;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,6 +27,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 public class TestAdapter extends RecyclerView.Adapter<TestAdapter.MyViewHolder> {
     //Adapter is an implementation to dynamically display a Collection of Objects into the Recycler view
@@ -44,6 +47,7 @@ public class TestAdapter extends RecyclerView.Adapter<TestAdapter.MyViewHolder> 
     int mode; //To determine the mode of the Adapter
 
 
+    //Constructor method
     public TestAdapter(Context context, ArrayList<PlayerInfo> list, int mode,RosterManager rosterManager) {
         this.context = context;
         this.list = list;
@@ -54,7 +58,7 @@ public class TestAdapter extends RecyclerView.Adapter<TestAdapter.MyViewHolder> 
     //Filtered retrieved from the input in the search bar ( in MarketPage )
     public void setFilteredList(ArrayList<PlayerInfo> filteredList){
         this.list = filteredList;//filteredList consists of Players with names that matches the input from the Searchbar
-        notifyDataSetChanged(); //This method needs to be called when there's change in data in the Collection to update the UI
+        notifyDataSetChanged(); //This method needs to be called when there's change in data in the Collection so that it update the UI
     }
 
 
@@ -86,17 +90,19 @@ public class TestAdapter extends RecyclerView.Adapter<TestAdapter.MyViewHolder> 
         holder.pos.setText("Position:" + playerInfo.getPOS());
 
 
-        boolean inInjury = rosterManager.getInjuryReserve().contains(playerInfo);
-        boolean inContract = rosterManager.getContractPlayers().contains(playerInfo);
-        if(inInjury && inContract){
-            holder.icon.setImageResource(R.drawable.ic_cart_outline_grey600_24dp);
-            holder.icon2.setImageResource(R.drawable.ic_account_outline_grey600_24dp);
-        }
-        else if (inInjury){
-            holder.icon.setImageResource(R.drawable.ic_cart_outline_grey600_24dp);
-        }
-        else if(rosterManager.getContractPlayers().contains(playerInfo)){
-            holder.icon.setImageResource(R.drawable.ic_account_outline_grey600_24dp);
+        boolean inInjury = rosterManager.inInjury(playerInfo);
+        boolean inContract = rosterManager.inContract(playerInfo);
+
+
+        if(mode == MODE_ROSTER) {
+            if (inInjury && inContract) {
+                holder.icon.setImageResource(R.drawable.medicaliconsm);
+                holder.icon2.setImageResource(R.drawable.contracticonsmall);
+            } else if (inInjury) {
+                holder.icon.setImageResource(R.drawable.medicaliconsm);
+            } else if (rosterManager.getContractPlayers().contains(playerInfo)) {
+                holder.icon.setImageResource(R.drawable.contracticonsmall);
+            }
         }
 
 
@@ -134,12 +140,25 @@ public class TestAdapter extends RecyclerView.Adapter<TestAdapter.MyViewHolder> 
                 .setView(dialogView)
                 .create();
 
+        dialog.setContentView(dialogView);
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        dialog.getWindow().setBackgroundBlurRadius(2);
+        dialog.setOnShowListener(dialogInterface -> {
+            dialog.getWindow().setLayout(850, 900);
+        });
+        dialog.show();
+
         //Get the current balance from rosterManager, and use it to set the text View ( shows balance to front end)
         Long balance = rosterManager.getBalance();
         TextView showbalance = dialogView.findViewById(R.id.showbalance);
         showbalance.setText("Balance: " + balance);
 
-        Button cancelButton = dialogView.findViewById(R.id.cancelButton);
+        TextView displayplayer = dialogView.findViewById(R.id.getwho);
+
+        displayplayer.setText("Get " + list.get(position).getName() + "?");
+
+
+
         Button confirmButton = dialogView.findViewById(R.id.confirmButton);
         //When confirm button is clicked:
         confirmButton.setOnClickListener(new View.OnClickListener() {
@@ -166,7 +185,14 @@ public class TestAdapter extends RecyclerView.Adapter<TestAdapter.MyViewHolder> 
 
                         // Perform the fragment transaction
                         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                        fragmentTransaction.setCustomAnimations(
+                                R.anim.slideup,  // enter animation
+                                R.anim.slidedown,
+                                R.anim.slidedown,  // enter animation
+                                R.anim.slideup
+                        );
                         fragmentTransaction.replace(R.id.container, fragment);
+
                         fragmentTransaction.addToBackStack(null);
                         fragmentTransaction.commit();
                     }
@@ -185,8 +211,6 @@ public class TestAdapter extends RecyclerView.Adapter<TestAdapter.MyViewHolder> 
             }
         });
 
-        //Close the popup view when clicked
-        cancelButton.setOnClickListener(view -> dialog.dismiss());
 
         dialog.show();//Show popup window
     }
@@ -194,20 +218,29 @@ public class TestAdapter extends RecyclerView.Adapter<TestAdapter.MyViewHolder> 
 
     //This popup shows when clicking the player cards in Roster
     private void showRosterDialog(MyViewHolder holder, int position) {
+        //Create an alert dialog popup with the layout
         View dialogView = LayoutInflater.from(context).inflate(R.layout.rosterpopupview, null);
         AlertDialog dialog = new AlertDialog.Builder(context)
                 .setView(dialogView)
                 .create();
 
-        Button remove = dialogView.findViewById(R.id.removePlayerButton);
-        Button addInjury = dialogView.findViewById(R.id.injuryButton);
+        //Setting custom popup layout size and background color to transparaent
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        dialog.setOnShowListener(dialogInterface -> {
+            dialog.getWindow().setLayout(850, 900);
+        });
+        dialog.show();
+
+        //Button references from layout
+        Button remove = dialogView.findViewById(R.id.removePlayer);
+        Button addInjury = dialogView.findViewById(R.id.addInjury);
         Button addContract = dialogView.findViewById(R.id.addQueue);
 
         // Get the data for the selected player
         PlayerInfo data = list.get(position);
 
         //Display selected player's name in this popup
-        TextView PlayerName = dialogView.findViewById(R.id.playerNameTV);
+        TextView PlayerName = dialogView.findViewById(R.id.selectedPlayer);
         PlayerName.setText(data.getName());
 
         //When 'Remove player' button is clicked:
@@ -255,8 +288,15 @@ public class TestAdapter extends RecyclerView.Adapter<TestAdapter.MyViewHolder> 
                 boolean checkExist = RosterManager.getInstance().checkExistInjury(data);
                 Log.d("EXIST","EXIST" + checkExist);
                 if(!checkExist) {
+                    String[] injuries = {"Strained Ankle","ACL","Hamstring Strains","Concussions","Broken Bones"," Foot Fractures"};
 
-                    RosterManager.getInstance().addToInjuryReserve(data, "Injury Description");
+                    Random random = new Random();
+
+                    // Generate a random index within the bounds of the array
+                    int randomIndex = random.nextInt(injuries.length);
+                    String injury = injuries[randomIndex];
+
+                    RosterManager.getInstance().addToInjuryReserve(data, injury);
                     notifyDataSetChanged();
                     // Save the player's injury status
                 }
@@ -264,19 +304,25 @@ public class TestAdapter extends RecyclerView.Adapter<TestAdapter.MyViewHolder> 
             }
         });
 
-
+        //When add to contract button is clicked:
         addContract.setOnClickListener(new View.OnClickListener() {
+
             @Override
             public void onClick(View view) {
                 PlayerInfo data = list.get(position);
-                RosterManager.getInstance().addToContractExtensionQueue(data);
-                notifyDataSetChanged();
-                dialog.dismiss();
+
+                //If player isn't in queue yet, add them
+                boolean checkExist = rosterManager.checkExistContract(data);
+                if(!checkExist) {
+                    RosterManager.getInstance().addToContractExtensionQueue(data);
+                    notifyDataSetChanged();
+                    dialog.dismiss();
+                }
             }
         });
 
 
-
+        //Show the popup view
         dialog.show();
     }
 
@@ -309,6 +355,7 @@ public class TestAdapter extends RecyclerView.Adapter<TestAdapter.MyViewHolder> 
 
     public static class MyViewHolder extends RecyclerView.ViewHolder {
         //Components inside the player card's layout (player.xml)
+        //These components must exist in the layout
         ImageView profileImg,icon,icon2;
         TextView name,age,assist,height,pos,points,reb,salary,steal,weight,block;
 

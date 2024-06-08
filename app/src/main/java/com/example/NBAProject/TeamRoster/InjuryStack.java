@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.NBAProject.R;
+import com.example.NBAProject.VerticalSpaceItemDecoration;
 
 import java.util.Stack;
 
@@ -42,14 +43,18 @@ public class InjuryStack extends Fragment {
 
 
 
-        recyclerView = view.findViewById(R.id.injuryStack);
+        recyclerView = view.findViewById(R.id.injuredplayers);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext())); // 3 columns
         injuryAdapter = new InjuryAdapter(getContext(), injuryList);
         recyclerView.setAdapter(injuryAdapter);
 
+        int verticalSpace = 60; // 50 pixels of space
+        VerticalSpaceItemDecoration itemDecoration = new VerticalSpaceItemDecoration(verticalSpace);
 
+        // Add the item decoration to the RecyclerView
+        recyclerView.addItemDecoration(itemDecoration);
 
-        remove = view.findViewById(R.id.removeInjuredPlayerButton);
+        remove = view.findViewById(R.id.treatplayers);
 
         remove.setOnClickListener(new View.OnClickListener() {
             @Override

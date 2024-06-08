@@ -23,7 +23,6 @@ import com.example.NBAProject.Sidebar.DrawerAdapter;
 import com.example.NBAProject.Sidebar.DrawerItem;
 import com.example.NBAProject.Sidebar.SimpleItem;
 import com.example.NBAProject.TeamRoster.Roster;
-import com.example.NBAProject.TeamRoster.RosterManager;
 import com.yarolegovich.slidingrootnav.SlidingRootNav;
 import com.yarolegovich.slidingrootnav.SlidingRootNavBuilder;
 
@@ -33,11 +32,9 @@ import java.util.Arrays;
 //None of the basic features can be found here
 public class NavigationBar extends AppCompatActivity implements DrawerAdapter.OnItemSelectedListener {
 
-    private final int POS_Market = 0;
-    private final int POS_Team = 1;
+    private final int POS_Team = 0;
+    private final int POS_Market = 1;
     private final int POS_Journey = 2;
-    RosterManager rosterManager;
-
     private String[] screenTitles;// Collection of sidebar titles
     private Drawable[] screenIcons; //Collection of sidebar icons
     private SlidingRootNav slidingRootNav; //External dependency that gives the sliding animation for the sidebar
@@ -47,6 +44,7 @@ public class NavigationBar extends AppCompatActivity implements DrawerAdapter.On
 
 
         super.onCreate(savedInstanceState);
+        //This is the container where fragment will be displayed by replacing this layout
         setContentView(R.layout.activity_main);
 
         //Setting the top bar of phone to black
@@ -68,12 +66,14 @@ public class NavigationBar extends AppCompatActivity implements DrawerAdapter.On
                 .withMenuLayout(R.layout.menu_left_drawer)
                 .inject();
 
+        //Load screen icons and titles for sidebar by calling these methods
         screenIcons = loadScreenIcons();
         screenTitles = loadScreenTitles();
 
+        //Creating the sidebar recyclerview adapter (display the icons) by sending List of DrawerItem (icons and titles)
         DrawerAdapter adapter = new DrawerAdapter(Arrays.asList(
-                createItemFor(POS_Market).setChecked(true),
-                createItemFor(POS_Team),
+                createItemFor(POS_Team).setChecked(true),
+                createItemFor(POS_Market),
                 createItemFor(POS_Journey)
                 ));
         adapter.setListener(this);
@@ -82,12 +82,14 @@ public class NavigationBar extends AppCompatActivity implements DrawerAdapter.On
         list.setNestedScrollingEnabled(false);
         list.setLayoutManager(new LinearLayoutManager(this));
         list.setAdapter(adapter);
-        adapter.setSelected(POS_Market);
+
+        //Initial
+        adapter.setSelected(POS_Team);
     }
 
     @Override
     public void onItemSelected(int position) {
-        if (position == POS_Market) {
+        if (position == POS_Team) {
             //Create a new Roster fragment and call the showFragment to replace the container view
             Roster fragment = new Roster();
             TextView PageTitle = findViewById(R.id.pagetitle);
@@ -97,7 +99,7 @@ public class NavigationBar extends AppCompatActivity implements DrawerAdapter.On
             showFragment(fragment);
 
         }
-        else if(position == POS_Team){
+        else if(position == POS_Market){
             //Create a new MarketPage and call the showFragment to replace the container view with the fragment
             MarketPage fragment = new MarketPage();
             TextView PageTitle = findViewById(R.id.pagetitle);
@@ -157,6 +159,7 @@ public class NavigationBar extends AppCompatActivity implements DrawerAdapter.On
         return icons; //Return Drawables (icon images)
     }
 
+    //Get the color resource id given the resource ID
     @ColorInt
     private int color(@ColorRes int res) {
         return ContextCompat.getColor(this, res);
