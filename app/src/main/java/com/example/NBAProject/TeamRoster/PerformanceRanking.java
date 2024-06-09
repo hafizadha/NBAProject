@@ -160,8 +160,8 @@ public class PerformanceRanking extends Fragment {
         }
 
         //Score is calculated by totalling the product of each attributes and its respective weightage
-        double compositeScore = (points * weights[0]) + (rebounds * weights[1]) +
-                (assists * weights[2]) + (steals * weights[3]) + (blocks * weights[4]);
+        double compositeScore = (((points/(double) 31) * weights[0]) + ((rebounds/(double)12) * weights[1]) +
+                ((assists/(double)7) * weights[2]) + ((steals/(double)2) * weights[3]) + ((blocks/(double)3)* weights[4])) * 100;
 
         return compositeScore;
     }
