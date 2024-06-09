@@ -4,8 +4,9 @@ NBAProject ( A Data Structure Project by Group 2 of OCC3) :-
 - Navigate through app/src/main/java/com/example/NBAProject for the Java Classes
 
 IMPORTANT NOTE:
-
 - Code must be run using the Android Studio IDE in order to function
+- Download the whole directory into a zip file ( try to exclude Web Scraping Folder ) and extract the folder into your AndroidStudioProjects folder (usually in C://Users//).
+- Then, go to file section on Android Studio toolbar and click Open Project
 - JSONs file must be manually imported into the Firestore's Realtime Database
 
 THE BASIC REQUIREMENTS OF THE TOPIC CAN BE FOUND IN THESE JAVA CLASSES :-
