@@ -1,6 +1,7 @@
 NBAProject ( A Data Structure Project by Group 2 of OCC3) :-
 
 Codes for Data Scraping can be found in main branch
+Navigate through app/src/main/java/com/example/NBAProject for the Java Classes
 
 IMPORTANT NOTE:
 
