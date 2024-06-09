@@ -15,11 +15,11 @@ TestAdapter.java
 1.2 Add Player
 
 MarketPlace Package:
-RosterPrint.java
-PrintAdapter.java
+  RosterPrint.java
+  PrintAdapter.java
 TeamRoster Package:
-TestAdapter.java:
-RosterManager.java:
+  TestAdapter.java:
+  RosterManager.java:
 1.3 Remove Player
 
 TeamRoster Package:
