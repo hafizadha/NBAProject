@@ -8,6 +8,8 @@ IMPORTANT NOTE:
 - Download the whole directory into a zip file ( try to exclude Web Scraping Folder ) and extract the folder into your AndroidStudioProjects folder (usually in C://Users//).
 - Then, go to file section on Android Studio toolbar and click Open Project
 - JSONs file must be manually imported into the Firestore's Realtime Database
+- To connect to the Firestore, go to Tools on Android Studio bar and find the Firebase, then search Guidelines for Realtime Database and follow the steps
+
 
 THE BASIC REQUIREMENTS OF THE TOPIC CAN BE FOUND IN THESE JAVA CLASSES :-
 
