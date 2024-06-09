@@ -5,8 +5,9 @@ NBAProject ( A Data Structure Project by Group 2 of OCC3) :-
 
 IMPORTANT NOTE:
 
-Code must be run in Android Studio IDE
-JSONs file must be manually imported into the Firestore's Realtime Database
+- Code must be run using the Android Studio IDE in order to function
+- JSONs file must be manually imported into the Firestore's Realtime Database
+
 THE BASIC REQUIREMENTS OF THE TOPIC CAN BE FOUND IN THESE JAVA CLASSES :-
 
 1.1 Build a championship contender team:
