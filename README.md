@@ -48,11 +48,13 @@ THE BASIC REQUIREMENTS OF THE TOPIC CAN BE FOUND IN THESE JAVA CLASSES :-
 - TeamRoster Package:
   - RosterManagement.java
   - InjuryStack.java
+  - MyStack.java
     
 1.8 Contract Extension Queue
 - TeamRoster Package:
   - RosterManagement.java
   - ContractQueue.java
+  - PlayerInfo.java
   
 1.9 Player Performance Ranking
 - TeamRoster Package:
