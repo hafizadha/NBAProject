@@ -2,7 +2,6 @@ package com.example.NBAProject.MarketPlace;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -135,7 +134,6 @@ public class MarketPage extends Fragment {
 
         //-----------------------------------------------------------------------------------------
         //Image Button to transition to Advanced Searching
-        Log.d("Text", "Hafiz" + minHeight);
         imageView = view.findViewById(R.id.advSearch);
         imageView.setOnClickListener(new View.OnClickListener() {
             @Override

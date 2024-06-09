@@ -16,13 +16,11 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.NBAProject.R;
 import com.example.NBAProject.VerticalSpaceItemDecoration;
 
-import java.util.Stack;
-
 public class InjuryStack extends Fragment {
     View view;
     private RecyclerView recyclerView;
     private InjuryAdapter injuryAdapter;
-    private Stack<PlayerInfo> injuryList;
+    private MyStack<PlayerInfo> injuryList;
     private RosterManager rosterManager;
     private Context context;
     Button remove;
@@ -39,10 +37,11 @@ public class InjuryStack extends Fragment {
 
         context = getContext();
 
+        //Get the injury reserve stack from the instance
         injuryList = rosterManager.getInjuryReserve();
 
 
-
+        //Setting recycler view with adapter to display the list of Players
         recyclerView = view.findViewById(R.id.injuredplayers);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext())); // 3 columns
         injuryAdapter = new InjuryAdapter(getContext(), injuryList);
@@ -54,17 +53,17 @@ public class InjuryStack extends Fragment {
         // Add the item decoration to the RecyclerView
         recyclerView.addItemDecoration(itemDecoration);
 
+        //When remove button is clicked:
         remove = view.findViewById(R.id.treatplayers);
-
         remove.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (!injuryList.isEmpty()) {
-                    // Remove the top player from the local injury list
-                    PlayerInfo data = injuryList.pop();
+                    // Remove the top player from the local injury list if its not empty
+                    PlayerInfo data = injuryList.pop(); //Stack implementation
                     // Remove the player from the injury reserve stack and add them back to the roster
-                    rosterManager.saveInjuryReserve(data,false);
-                    injuryAdapter.notifyDataSetChanged();
+                    rosterManager.saveInjuryReserve(data,false); //updates database (false indicating that it should be removed)
+                    injuryAdapter.notifyDataSetChanged(); //Notify the adapter so it can update the views
                 }
             }
         });

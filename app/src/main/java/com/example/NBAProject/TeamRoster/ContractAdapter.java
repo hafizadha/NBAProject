@@ -13,9 +13,10 @@ import com.example.NBAProject.R;
 
 import java.util.ArrayList;
 
+//Explanation of the Overriding methods in Adapters are in TestAdapter.java
 public class ContractAdapter extends RecyclerView.Adapter<ContractAdapter.ViewHolder>  {
-    Context context;
-    ArrayList<PlayerInfo> list;
+    Context context; //Get context to access resources
+    ArrayList<PlayerInfo> list; //ArrayList of players in the queue
 
     public ContractAdapter(Context context, ArrayList<PlayerInfo> queue) {
         this.list = queue;

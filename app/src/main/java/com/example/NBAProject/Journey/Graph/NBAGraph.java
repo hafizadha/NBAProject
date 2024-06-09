@@ -16,6 +16,7 @@ public class NBAGraph {
     public NBAGraph(){
         this.nbamap = new WeightedGraph();
 
+        //Adding vertex by the codename for team
         Vertex Spurs = nbamap.addVertex("SAS");
         Vertex Warriors = nbamap.addVertex("GSW");
         Vertex Celtics = nbamap.addVertex("BC");
@@ -28,6 +29,7 @@ public class NBAGraph {
         Vertex Rockets = nbamap.addVertex("HR");
         
 
+        //Adding edges between sources and destinations cities, including the distance between them (weight)
         nbamap.addEdge(Spurs, Magic, 1137);
         nbamap.addEdge(Spurs, Rockets, 983);
         nbamap.addEdge(Spurs, Thunder, 678);

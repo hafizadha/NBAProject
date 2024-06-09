@@ -8,7 +8,6 @@ import android.widget.TextView;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.ColorRes;
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -84,10 +83,11 @@ public class NavigationBar extends AppCompatActivity implements DrawerAdapter.On
         list.setLayoutManager(new LinearLayoutManager(this));
         list.setAdapter(adapter);
 
-        //Initial
+        //Initial position ( when app loads everytime it is opened)
         adapter.setSelected(POS_Team);
     }
 
+    //When the items (icons) are clicked
     @Override
     public void onItemSelected(int position) {
         if (position == POS_Team) {
@@ -145,10 +145,10 @@ public class NavigationBar extends AppCompatActivity implements DrawerAdapter.On
     }
 
     private Drawable[] loadScreenIcons() {
-        //Retrieve array of String icons in values -> strings.xml
+        //Loads array of String icons in values -> strings.xml
         TypedArray ta = getResources().obtainTypedArray(R.array.ld_activityScreenIcons);
         Drawable[] icons = new Drawable[ta.length()];
-        for (int i = 0; i < ta.length(); i++) {
+        for (int i = 0; i < ta.length(); i++) { //Iterate through the array
 
             //get the resource id of the current index from the id
             int id = ta.getResourceId(i, 0);

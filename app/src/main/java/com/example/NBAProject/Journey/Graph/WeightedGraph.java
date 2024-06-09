@@ -14,12 +14,14 @@ public class WeightedGraph {
         this.vertices = new ArrayList<Vertex>();
     }
 
+    //Add vertex into the instance ArrayList of Vertices variable
     public Vertex addVertex(String data) {
         Vertex newVertex = new Vertex(data);
         this.vertices.add(newVertex);
         return newVertex;
     }
 
+    //Add edge by passing the vertex1 (origin city) , vertex2 ( destination city ) and weight (distance)
     public void addEdge(Vertex vertex1, Vertex vertex2, Integer weight) {
         vertex1.addEdge(vertex2, weight);
         vertex2.addEdge(vertex1, weight);
@@ -32,30 +34,15 @@ public class WeightedGraph {
         
     }
 
+    //remove specific vertex
     public void removeVertex(Vertex vertex) {
         this.vertices.remove(vertex);
     }
 
+    //Get all vertices in the graph
     public ArrayList<Vertex> getVertices() {
 		return this.vertices;
 	}
 
-	public Vertex getVertexByValue(String value) {
-		for(Vertex v: this.vertices) { 
-			if (v.getData() == value) {
-				return v;
-			}
-		}
-
-		return null;
-	}
-	
-	public void print() {
-		for(Vertex v: this.vertices) {
-                    System.out.println(v.getEdges());
-		}
-	}
-
-        
 
 }

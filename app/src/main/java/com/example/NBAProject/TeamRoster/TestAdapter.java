@@ -202,11 +202,11 @@ public class TestAdapter extends RecyclerView.Adapter<TestAdapter.MyViewHolder> 
                 else{ //If insufficient balance, display error messages
                     if(!sufficient){
                         Toast.makeText(context,"Insufficient balance",Toast.LENGTH_SHORT).show();
-                    }else{
+                    }else{//Else, display that the team is full
                         Toast.makeText(context,"Team is full",Toast.LENGTH_SHORT).show();
                     }
 
-                }
+                }//Quit the popup view
                 dialog.dismiss();
             }
         });
@@ -285,17 +285,17 @@ public class TestAdapter extends RecyclerView.Adapter<TestAdapter.MyViewHolder> 
             public void onClick(View view) {
 
                 PlayerInfo data = list.get(position);
-                boolean checkExist = RosterManager.getInstance().checkExistInjury(data);
+                boolean checkExist = RosterManager.getInstance().inInjury(data);
                 Log.d("EXIST","EXIST" + checkExist);
                 if(!checkExist) {
-                    String[] injuries = {"Strained Ankle","ACL","Hamstring Strains","Concussions","Broken Bones"," Foot Fractures"};
-
+                    //Randomized scenarios of injury
+                    String[] injuries = {"Sprained Ankle", "Torn ACL", "Concussion", "Fractured Finger", "Strained Hamstring"};
                     Random random = new Random();
 
-                    // Generate a random index within the bounds of the array
+                    // Generate a random index within the size of array
                     int randomIndex = random.nextInt(injuries.length);
                     String injury = injuries[randomIndex];
-
+                    //Pass the parameters of player and his randomized injury to the method
                     RosterManager.getInstance().addToInjuryReserve(data, injury);
                     notifyDataSetChanged();
                     // Save the player's injury status
@@ -312,7 +312,7 @@ public class TestAdapter extends RecyclerView.Adapter<TestAdapter.MyViewHolder> 
                 PlayerInfo data = list.get(position);
 
                 //If player isn't in queue yet, add them
-                boolean checkExist = rosterManager.checkExistContract(data);
+                boolean checkExist = rosterManager.inContract(data);
                 if(!checkExist) {
                     RosterManager.getInstance().addToContractExtensionQueue(data);
                     notifyDataSetChanged();
@@ -348,23 +348,31 @@ public class TestAdapter extends RecyclerView.Adapter<TestAdapter.MyViewHolder> 
         return playerName.replaceAll("[.$\\[\\]#\\/]", "_");
     }
 
+
+    //this overriding method informs the RecyclerView how many items it needs to manage and display, influencing layout, scrolling behavior, and data binding
     @Override
     public int getItemCount() {
         return list.size();
-    }
+    } //Usually, it gets the size of the data
 
+    //This class holds references to the views that will display the data,
     public static class MyViewHolder extends RecyclerView.ViewHolder {
         //Components inside the player card's layout (player.xml)
         //These components must exist in the layout
         ImageView profileImg,icon,icon2;
         TextView name,age,assist,height,pos,points,reb,salary,steal,weight,block;
 
+
+        //onCreateViewHolder
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
+            //The variables are initialised by reference IDS inside the layout
 
+            //Imageview references from layout
             icon = itemView.findViewById(R.id.statusicon);
             icon2 = itemView.findViewById(R.id.statusicon2);
 
+            //Textview references from layout
             profileImg = itemView.findViewById(R.id.profileImage);
             name = itemView.findViewById(R.id.playerNameTV);
             age= itemView.findViewById(R.id.AgeTV);
@@ -377,7 +385,6 @@ public class TestAdapter extends RecyclerView.Adapter<TestAdapter.MyViewHolder> 
             steal = itemView.findViewById(R.id.StealsTV);
             weight = itemView.findViewById(R.id.WeightTV);
             block = itemView.findViewById(R.id.BlocksTV);
-
         }
 
 

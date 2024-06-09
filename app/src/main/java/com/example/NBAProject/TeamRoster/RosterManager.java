@@ -1,7 +1,5 @@
 package com.example.NBAProject.TeamRoster;
 
-import android.util.Log;
-
 import androidx.annotation.NonNull;
 
 import com.google.firebase.database.DataSnapshot;
@@ -12,7 +10,6 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.PriorityQueue;
-import java.util.Stack;
 
 //This Java Class is responsible for most of the team management's
 //mechanism includes importing data, updating database, removing and adding players.
@@ -21,7 +18,7 @@ public class RosterManager {
     private long balance = 20000;
     private final int MAX_PLAYERS = 15; //Maximum player in a roster
     private ArrayList<PlayerInfo> roster; //Roster
-    private Stack<PlayerInfo> injuryReserve; //Stack
+    private MyStack<PlayerInfo> injuryReserve; //Stack
     private PriorityQueue<PlayerInfo> contractExtensionQueue; //Priority Queue
     private int currentNumberOfPlayers; // Variable to store the number of players fetched from Firebase
     private static RosterManager instance;
@@ -29,7 +26,7 @@ public class RosterManager {
 
     public RosterManager(int size) {
         this.roster = new ArrayList<>();
-        this.injuryReserve = new Stack<>();
+        this.injuryReserve = new MyStack<>();
         this.contractExtensionQueue = new PriorityQueue<>();
 
         // Initialize Firebase Database reference
@@ -42,7 +39,6 @@ public class RosterManager {
         getBalanceFromDatabase();
 
         currentNumberOfPlayers = size;
-        Log.d("APA NI","X FHM + " + currentNumberOfPlayers);
     }
 
     public static RosterManager getInstance(int size) {
@@ -120,15 +116,6 @@ public class RosterManager {
     }
 
 
-
-    public boolean checkExistInjury(PlayerInfo player){
-        return injuryReserve.contains(player);
-    }
-
-    public boolean checkExistContract(PlayerInfo player){
-        return contractExtensionQueue.contains(player);
-    }
-
     //Add player to the injury reserve (
     public void addToInjuryReserve(PlayerInfo player, String injury) {
         //If injury doesn't contain the player
@@ -146,13 +133,13 @@ public class RosterManager {
     //Add player to Contract Queuee
     public void addToContractExtensionQueue(PlayerInfo player) {
         contractExtensionQueue.offer(player); //Inserts specifies element into the queue
-        saveContractExtensionQueue(player,true);
+        saveContractExtensionQueue(player,true); //Add player to database
     }
 
     //Remove player from Contract Queue
     public void removeFromContractExtensionQueue() {
         if (!contractExtensionQueue.isEmpty()) {
-            PlayerInfo player = contractExtensionQueue.remove();
+            PlayerInfo player = contractExtensionQueue.remove(); //Remove the top priority player (higher points)
             saveContractExtensionQueue(player,false); //Updates database (remove player)
         }
     }
@@ -161,7 +148,7 @@ public class RosterManager {
     public ArrayList<PlayerInfo> getRoster() {
         return this.roster;
     }
-    public Stack<PlayerInfo> getInjuryReserve() {
+    public MyStack<PlayerInfo> getInjuryReserve() {
         return this.injuryReserve;
     }
     public PriorityQueue<PlayerInfo> getContractPlayers() {
@@ -198,10 +185,9 @@ public class RosterManager {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 injuryReserve.clear();
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()){
-                    Log.d("HAFIZ","APA NI" + dataSnapshot);
                     PlayerInfo data = dataSnapshot.getValue(PlayerInfo.class);
                     if (data != null) {
-                        injuryReserve.add(data);
+                        injuryReserve.push(data);
                     }
                 }
             }
@@ -222,7 +208,7 @@ public class RosterManager {
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()){
                     PlayerInfo data = dataSnapshot.getValue(PlayerInfo.class);
                     if (data != null) {
-                        contractExtensionQueue.add(data); //Inserts player into the queue
+                        contractExtensionQueue.offer(data); //Inserts player into the queue
                     }
                 }
             }
@@ -308,7 +294,7 @@ public class RosterManager {
     private void saveCurrentPlayers() {
         //Referencing the NoOfPlayers node in databse
         DatabaseReference rosterRef = FirebaseDatabase.getInstance().getReference("NoOfPlayers");
-        rosterRef.setValue(roster.size());//Set vale into it
+        rosterRef.setValue(roster.size());//Set value into it
     }
 
     //Firebase can't receive some special characters when trying to read/write, thus names need to be replaced

@@ -1,7 +1,6 @@
 package com.example.NBAProject.TeamRoster;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,7 +38,6 @@ public class RankAdapter extends RecyclerView.Adapter<RankAdapter.MyViewHolder> 
     public void onBindViewHolder(@NonNull RankAdapter.MyViewHolder holder, int position) {
         PlayerInfo playerInfo = list.get(position);
 
-        Log.d("TEST","POS" + position);
 
         //Setting values for components in the layout of each player card
         holder.score.setText(String.format("%s", playerInfo.getCompositeScore()));
@@ -48,17 +46,17 @@ public class RankAdapter extends RecyclerView.Adapter<RankAdapter.MyViewHolder> 
 
 
 
-
+        //If first place, set gold medal
         if(position == 0 && firstplace){
             holder.rankicon.setImageDrawable(context.getDrawable(R.drawable.goldmedal));
             firstplace = false;
-        }else if(position == 1&& secondplace){
+        }else if(position == 1&& secondplace){ //if second place, set silver medal
             holder.rankicon.setImageDrawable(context.getDrawable(R.drawable.silvermedal));
             secondplace = false;
-        }else if(position == 2&& thirdplace){
+        }else if(position == 2&& thirdplace){ //If third place, set bronze medal
             holder.rankicon.setImageDrawable(context.getDrawable(R.drawable.bronzemedal));
             thirdplace = false;
-        }else {
+        }else { //otherwise, set nothing
             holder.rankicon.setVisibility(View.GONE);
         }
 

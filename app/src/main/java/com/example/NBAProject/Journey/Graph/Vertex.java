@@ -17,42 +17,37 @@ public class Vertex {
         this.edges = new ArrayList<Edge>();
     }
 
+	//Add edge with destination city and distance between them as parameter
     public void addEdge(Vertex endVertex, Integer weight) {
         this.edges.add(new Edge(this, endVertex, weight));
     }
 
+	//Remove the edge by refering to the destination city
     public void removeEdge(Vertex endVertex) {
+		//Remove from edges if the edge's destination is equal to the end vertex parameter
         this.edges.removeIf(edge -> edge.getEnd().equals(endVertex));
     }
 
+	//Get data (name) of vertex
     public String getData() {
 		return this.data;
 	}
 
+	//Return all edges connected to the Vertex
 	public ArrayList<Edge> getEdges(){
 		return this.edges;
 	}
-        
-        
-        public Edge getSpecificEdge(String end){
-		for(Edge e: edges){
-                    System.out.println(e.getEnd().getData());
-                    if(e.getEnd().equals(end) || e.getStart().equals(end)){
-                        return e;
-                    }
 
-                }
-		return null;
-	}
-
+	//Print out all edges connected to the Vertex
 	public void print(boolean showWeight) {
 		String message = "";
-		
+
+		//no edge
 		if (this.edges.size() == 0) {
 			System.out.println(this.data + " -->");
 			return;
 		}
-		
+
 		for(int i = 0; i < this.edges.size(); i++) {
 			if (i == 0) {
 				message += this.edges.get(i).getStart().data + " -->  ";

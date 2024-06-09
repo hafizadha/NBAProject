@@ -49,10 +49,11 @@ public class PlayerInfo implements Comparable<PlayerInfo>, Parcelable, Serializa
 
 
     //Implementation of Parcelable interface
+    //This overriding method indicates whether
     @Override
     public int describeContents() {
         return 0;
-    }
+    } //It returns zero as there are no file descriptors for this Object
 
     protected PlayerInfo(Parcel in) {
         Height = in.readInt();
@@ -72,8 +73,10 @@ public class PlayerInfo implements Comparable<PlayerInfo>, Parcelable, Serializa
 
 
     //Overriding methods from Parcelable interface
+    //Writes fields of the Object into Parcelable before it can be passed between other components in Android
     @Override
     public void writeToParcel(Parcel dest, int flags) {
+         //Fields in the PlayerInfo object are written into the parcel
         dest.writeInt(Height);
         dest.writeFloat(Weight);
         dest.writeString(Age);
@@ -89,13 +92,14 @@ public class PlayerInfo implements Comparable<PlayerInfo>, Parcelable, Serializa
         dest.writeString(injuryDescription); // Write the new field
     }
 
+    //Creator field created when implementing the Parcelable interface
     public static final Creator<PlayerInfo> CREATOR = new Creator<PlayerInfo>() {
-        @Override
+        @Override //Reads data from Parcel and create a new PlayerInfo object from it
         public PlayerInfo createFromParcel(Parcel in) {
             return new PlayerInfo(in);
         }
 
-        @Override
+        @Override //Creates an array of PlayerInfo based on the size of dataset
         public PlayerInfo[] newArray(int size) {
             return new PlayerInfo[size];
         }
@@ -231,25 +235,30 @@ public class PlayerInfo implements Comparable<PlayerInfo>, Parcelable, Serializa
     public void setCompositeScore(double compositeScore) {
         this.compositeScore = compositeScore;
     }
+
+    //For sorting Stack into database
     public void setTimestamp(long timestamp) {
         this.timestamp = timestamp;
     }
-
     public long getTimestamp() {
         return timestamp;
     }
 
-    //Overriding method in Comparable interface
+    //Overriding method in Comparable interface ( this is how priority is decided)
     @Override
     public int compareTo(PlayerInfo o) {
+        //If points of current player is less than the points of player received from parameter
         if(Float.parseFloat(this.getPoints()) < Float.parseFloat(o.getPoints())) {
-            return 1;
+            return 1; //then, this object should come after the player (lower priority)
         } else if (Float.parseFloat(this.getPoints()) > Float.parseFloat(o.getPoints())) {
-            return -1;
+            return -1; //otherwise, this object should come before the player ( higher priority )
         } else {
-            return 0;
+            return 0; //0 means they are equal in terms ( have same priority )
         }
     }
+
+    //Used for Hash collections (HashMap,etc.) , not by Priority Queue
+    //Priority Queue relies on comparable interface instead
     @Override
     public int hashCode() {
         return Objects.hash(Name, Points);

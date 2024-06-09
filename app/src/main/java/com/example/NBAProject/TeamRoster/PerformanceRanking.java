@@ -1,7 +1,6 @@
 package com.example.NBAProject.TeamRoster;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -57,69 +56,77 @@ public class PerformanceRanking extends Fragment {
     }
 
 
+    //Method to sort players based on their composite score via merge sort
     public void rankPlayers() {
-        mergeSort(players, 0, players.size() - 1);
+        mergeSort(players, 0, players.size() - 1); //send arraylist ands its lowest index as left and highest index as right
         // Print the ranked players in Logcat
         for (int i = 0; i < players.size(); i++) {
             PlayerInfo player = players.get(i);
             double compositeScore = Math.round(calculateCompositeScore(player));
 
-            Log.d("TESR","RENAK" + compositeScore);
             player.setCompositeScore(compositeScore);
-            Log.d("TEDT","Rank: "+ i );
-            Log.d("RERE","Player: "+player.getName());
-            Log.d("TESDT","Composite Score: "+player.getCompositeScore());
+
         }
     }
 
+    //This method split the list into halves and sort them
     private void mergeSort(List<PlayerInfo> players, int left, int right) {
         if (left < right) {
-            int middle = (left + right) / 2;
-            mergeSort(players, left, middle);
+            int middle = (left + right) / 2;//Get the middle index of the list
 
-            mergeSort(players, middle + 1, right);
+            //Recursive call
+            mergeSort(players, left, middle); // sort the first half
+            mergeSort(players, middle + 1, right); // sort the second half
             merge(players, left, middle, right);
         }
     }
 
+    //This method is where the players are sorted based on their composite score
     private void merge(List<PlayerInfo> players, int left, int middle, int right) {
+        //Initializing the sizes of first and second half
         int leftSize = middle - left + 1;
         int rightSize = right - middle;
 
+        //Create new list for both first and second half to flood with players inside the sublist
         List<PlayerInfo> leftList = new ArrayList<>();
         List<PlayerInfo> rightList = new ArrayList<>();
 
+        //Adding player from first half into list
         for (int i = 0; i < leftSize; i++) {
             leftList.add(players.get(left + i));
         }
+        //Adding player from second half into the list
         for (int i = 0; i < rightSize; i++) {
-            rightList.add(players.get(middle + 1 + i));
+            rightList.add(players.get(middle + 1 + i)); //First player of second half starts right after index of middle
         }
 
+        //Initialise indexes for loop
         int leftIndex = 0;
         int rightIndex = 0;
         int currentIndex = left;
 
+        //The iteration of left and right list has not completed
         while (leftIndex < leftSize && rightIndex < rightSize) {
+            //Calculate score for each
             double leftCompositeScore = calculateCompositeScore(leftList.get(leftIndex));
             double rightCompositeScore = calculateCompositeScore(rightList.get(rightIndex));
-
-            if (leftCompositeScore >= rightCompositeScore) { // here(?)
-                players.set(currentIndex, leftList.get(leftIndex));
-                leftIndex++;
+            //If left has greater score
+            if (leftCompositeScore >= rightCompositeScore) {
+                players.set(currentIndex, leftList.get(leftIndex)); //Set current index of the playerlist with the object taken by the index of the left list
+                leftIndex++;//Move to the next index of left list
             } else {
-                players.set(currentIndex, rightList.get(rightIndex));
-                rightIndex++;
+                players.set(currentIndex, rightList.get(rightIndex));//Set current index of the playerlist with the object from right list with the index
+                rightIndex++; //Move to the next index of rightlist
             }
-            currentIndex++;
+            currentIndex++; //Move to the next index of playerList
         }
-
+        //While iteration of left sublist has not completed yet
         while (leftIndex < leftSize) {
             players.set(currentIndex, leftList.get(leftIndex));
             leftIndex++;
             currentIndex++;
         }
-
+        //While iteration of right sublist has not completed yet
         while (rightIndex < rightSize) {
             players.set(currentIndex, rightList.get(rightIndex));
             rightIndex++;
@@ -127,6 +134,7 @@ public class PerformanceRanking extends Fragment {
         }
     }
 
+    //Calculation of composite Score is done by taking account of some attributes and weight (depending on the role he plays)
     private double calculateCompositeScore(PlayerInfo player) {
         String positions = player.getPOS().toString();
 

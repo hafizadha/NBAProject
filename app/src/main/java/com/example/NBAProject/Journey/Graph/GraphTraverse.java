@@ -57,37 +57,45 @@ public class GraphTraverse extends Fragment {
             "PS", "OM", "DN", "OCT", "HR"
     };
 
+    //Constructor with context and ArrayList of NBATeam as parameters
+    //Context (passed by parent fragment) are used to get resources and use app services for the front end
     public GraphTraverse(Context context,ArrayList<NBATeam> nbacities) {
         this.context = context;
         this.nbacities = nbacities;
     }
 
-
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        //Inflate the layout
         view = inflater.inflate(R.layout.graphtraverse, container, false);
 
+        //References for components
         spinner = view.findViewById(R.id.spinner);
         textView1 = view.findViewById(R.id.textView1);
         textView2 = view.findViewById(R.id.textView2);
 
+        //Setting the dropdown consisting of choices of graph traversal algorithm
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getContext(),R.array.choices, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
 
+        //When the dropdown is clicked:
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
-                hideAllViews();
+                hideAllViews(); //Hide dropdown options after choices are clocked
+
+                //Check choice
                 switch (position) {
-                    case 0:
-                        cityorder = new ArrayList<>();
-                        pathdistance1 = 0;
+                    case 0: //Nearest Neighbour algorithm
+                        cityorder = new ArrayList<>();//Create new arraylist to be displayed
+                        pathdistance1 = 0;//Set path distance back to 0 for new calculation
+
 
                         showNearestNeighborTSPResult();
-                        generateRecyclerView(cityorder,pathdistance1);
+                        generateRecyclerView(cityorder,pathdistance1); //Displays results by the Ui
                         break;
-                    case 1:
+                    case 1: //DFS
                         cityorder = new ArrayList<>();//Create new arraylist to be displayed
                         NBAGraph test = new NBAGraph(); //Create an instance NBAGraph constructed from Weighted Graph
                         pathdistance1 = 0;//Set path distance back to 0 for new calculation
@@ -157,17 +165,23 @@ public class GraphTraverse extends Fragment {
     }
 
     private List<Integer> nearestNeighborTSP() {
+
+        //create a boolean array to keeep track of visited cities
         boolean[] visited = new boolean[NUM_CITIES];
+        //Instantiate a list of route taking order of visited cities
         List<Integer> route = new ArrayList<>();
+
+        //Finding first city
         int currentCity = findInitialCity();
         if (currentCity == -1) {
             return null;
         }
-        route.add(currentCity);
-        visited[currentCity] = true;
+        route.add(currentCity); // Add current city into the order
+        visited[currentCity] = true; //true indicates it has been visited
 
-        int numVisited = 1;
+        int numVisited = 1; //One city has been visited
 
+        //
         while (numVisited < NUM_CITIES) {
             int nextCity = -1;
             int minDistance = INF;
@@ -182,7 +196,6 @@ public class GraphTraverse extends Fragment {
             if (nextCity == -1) {
                 return null;
             }
-
             route.add(nextCity);
             visited[nextCity] = true;
             currentCity = nextCity;
@@ -195,11 +208,14 @@ public class GraphTraverse extends Fragment {
     private int findInitialCity() {
         for (int i = 0; i < NUM_CITIES; i++) {
             for (int j = 0; j < NUM_CITIES; j++) {
+                //If it's not the same city and there exists a connection between them
                 if (i != j && DISTANCES[i][j] != INF) {
                     return i;
                 }
             }
         }
+
+        //Return -1 if can't find
         return -1;
     }
 
@@ -243,10 +259,12 @@ public class GraphTraverse extends Fragment {
                 visitedVertices.add(neighbor);
                 pathdistance1 += e.getWeight();
 
+                //Recursion call
                 depthFirstTraversal(neighbor, visitedVertices);
             }
         }
 
+        //If it is a list node
         if (isLeaf) {
             System.out.println("Reached a leaf node: " + start.getData());
 

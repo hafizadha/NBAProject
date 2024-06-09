@@ -71,12 +71,13 @@ public class RosterPrint extends Fragment {
 
     //Import the current roster from the database ( Data is stored right after addition of player)
     private void fetchDataFromFirebase() {
+        //Node reference
         DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("roster");
         databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                dataList.clear();
-                for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                dataList.clear(); //Clear to prevent any duplicates
+                for (DataSnapshot dataSnapshot : snapshot.getChildren()) { //Iterate through the children of the node
                     PlayerInfo data = dataSnapshot.getValue(PlayerInfo.class);
                     if (data != null) {
                         dataList.add(data);
@@ -84,6 +85,7 @@ public class RosterPrint extends Fragment {
                 }
                 adapter.notifyDataSetChanged();
             }
+            //If failed to import
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
                 Log.e("Roster", "Failed to read data from Firebase", error.toException());

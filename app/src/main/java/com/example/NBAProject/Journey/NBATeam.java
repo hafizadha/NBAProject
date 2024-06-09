@@ -4,29 +4,19 @@ package com.example.NBAProject.Journey;
 import com.google.android.gms.maps.model.LatLng;
 
 public class NBATeam {
-     String TeamName;
-     String Location;
-     String Arena;
-     String Codename;
-     LatLng cord;
-     int resourceid;
+     private String TeamName;
+    private String Location;
+    private String Arena;
+    private String Codename;
+    private LatLng cord;
+    private int resourceid;
 
+     //Empty constructor
     NBATeam(){
 
     }
 
-    public NBATeam(String teamName, String location, String arena, String codename) {
-        this.TeamName = teamName;
-        this.Location = location;
-        this.Arena = arena;
-        this.Codename = codename;
-    }
-
-    public NBATeam(String teamName, String location, String arena) {
-        this.TeamName = teamName;
-        this.Location = location;
-        this.Arena = arena;
-    }
+    //Getter and setter methods
 
     public String getTeamName() {
         return TeamName;

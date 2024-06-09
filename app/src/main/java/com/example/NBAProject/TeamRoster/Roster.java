@@ -159,7 +159,6 @@ public class Roster extends Fragment {
         //No regulation for the amount of inactive players
         totaldisplay.setTextColor(context.getResources().getColor(totalplayers <10 ? R.color.NBARed : R.color.green));
         activedisplay.setTextColor(context.getResources().getColor(activePlayers <10 ? R.color.NBARed : R.color.green));
-        inactivedisplay.setTextColor(context.getResources().getColor(inactivePlayers <10 ? R.color.NBARed : R.color.green));
 
         //Counting the players playing a role for each position
         //There must be at least 2 players for each position
@@ -188,13 +187,13 @@ public class Roster extends Fragment {
         centerdis.setText(String.valueOf(Centers));
 
         // Set text color for guards (Red if less than two)
-        guarddis.setTextColor(context.getResources().getColor(Guards >= 2 ? R.color.black : R.color.NBARed));
+        guarddis.setTextColor(context.getResources().getColor(Guards >= 2 ? R.color.green : R.color.NBARed));
 
         // Set text color for forwards(Red if less than two)
-        forwarddis.setTextColor(context.getResources().getColor(Forwards >= 2 ? R.color.black : R.color.NBARed));
+        forwarddis.setTextColor(context.getResources().getColor(Forwards >= 2 ? R.color.green : R.color.NBARed));
 
         // Set text color for centers(Red if less than two)
-        centerdis.setTextColor(context.getResources().getColor(Centers >= 2 ? R.color.black : R.color.NBARed));
+        centerdis.setTextColor(context.getResources().getColor(Centers >= 2 ? R.color.green : R.color.NBARed));
 
         //Display the view
         dialog.show();
@@ -248,15 +247,21 @@ public class Roster extends Fragment {
         return dataList.size() >= 15;
     }
 
+
+    //Calculate total Salary
     private int calculateTotalSalary() {
-        int totalSalary = 20000;
+        int totalSalary = 20000; //Max cap salary
+
+        //Subtract the totalSalary by the sum of every player in the roster's salary
         for (PlayerInfo player : dataList) {
             totalSalary -= player.getSalary();
         }
         return totalSalary;
     }
 
+    //Save the current Number of players to Database
     private void saveNumberOfPlayersToFirebase() {
+        //Node reference
         DatabaseReference playersRef = FirebaseDatabase.getInstance().getReference("NoOfPlayers");
 
         int numberOfPlayers = dataList.size();
@@ -274,7 +279,6 @@ public class Roster extends Fragment {
         //Node reference
         DatabaseReference salaryRef = FirebaseDatabase.getInstance().getReference("currentSalary");
 
-
         //int salary = rosterManager.getCurrentSalary();
         int salary = calculateTotalSalary();
         salaryRef.setValue(salary).addOnCompleteListener(task -> {
@@ -287,7 +291,7 @@ public class Roster extends Fragment {
         });
     }
 
-    //Retrive current Salary from the Database
+    //Retrieve current Salary from the Database
     public void fetchCurrentSalaryFromFirebase() {
         //Node reference (currentSalary)
         DatabaseReference salaryRef = FirebaseDatabase.getInstance().getReference("currentSalary");

@@ -54,6 +54,8 @@ public class MapFragment extends Fragment {
     DatabaseReference databaseReference;
     Button toRoute;
     boolean newupload;
+
+    //Boundaries of the map
     private LatLngBounds USA = new LatLngBounds(
             new LatLng(32.666126, -118.057793), new LatLng(43.885896, -69.149253));
 
@@ -63,29 +65,29 @@ public class MapFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-    try {
+        //Doing the try and catch method to avoid loading new data everytime the fragment runs
+    try {//Throw exception if the teamArrayList is null
         if (teamArrayList.isEmpty()) {
             loadTeam();
         }
-        newupload = false;
-        Log.d("TEDD","DH PERNAH UPLOAD");
+        newupload = false; //First time uplod false
     }catch (NullPointerException e){
         teamArrayList = new ArrayList<>();
         loadTeam();
         newupload = true;
-        Log.d("TEDD","BARU UPLOAD");
     }
 
         // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.mapbox, container, false);
         geocoder = new Geocoder(getActivity());
 
+        //Generates the map
         SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(new OnMapReadyCallback() {
             @Override
             public void onMapReady(@NonNull GoogleMap googleMap) {
-                googleMap.setLatLngBoundsForCameraTarget(USA);
-                googleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+                googleMap.setLatLngBoundsForCameraTarget(USA); //Bound map to only limit to the United States
+                googleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL); //Setting the built in style for the map
 
                 //Call method to set Coordinates into each team details
                 if (newupload) {
@@ -94,33 +96,37 @@ public class MapFragment extends Fragment {
 
                 for (NBATeam team : teamArrayList) {
                     String codename = team.getCodename().toLowerCase();
+                    //calling this method to get resource by using codenames of each team
+                    //From the resource id, we are able to create icons for markers
                     int resourceid = getResourceId(codename, "mipmap", getContext());
 
+
+                    //Automatically zoom to SPURS when map loads
                     if (team.getCodename().equals("SAS")) {
                         googleMap.moveCamera(CameraUpdateFactory.newLatLng(team.getCord()));
                     }
 
-
+                    //If the resource isn't empty
                     if (resourceid != 0) {
-                        team.setResourceid(resourceid);
-                        Log.d("TEST", "RES: " + resourceid);
+                        team.setResourceid(resourceid); //Set resource id into object for later use
                         MarkerOptions mo = new MarkerOptions()
-                                .position(team.getCord())
-                                .title(team.getTeamName())
-                                .icon(bitmapDescriptor(getContext(), resourceid));
-                        googleMap.addMarker(mo);
+                                .position(team.getCord()) //Positions markers to Map based on coordinates
+                                .title(team.getTeamName()) //Set title for the markers
+                                .icon(bitmapDescriptor(getContext(), resourceid)); //Generate icons for the markers
+                        googleMap.addMarker(mo); //Add markers
                     } else {
+                        //If resource ID isn't available, the built in marker icon is generated instead
                         MarkerOptions mo = new MarkerOptions()
-                                .position(team.getCord())
-                                .title(team.getTeamName());
+                                .position(team.getCord())//Positions markers to Map based on coordinates
+                                .title(team.getTeamName());//Set title for the markers
                         googleMap.addMarker(mo);
                     }
 
+                    //When the marker is clicked, a popup of team's information will appear
                     googleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
                         @Override
                         public boolean onMarkerClick(@NonNull Marker marker) {
                             NBATeam display = findTeam(marker);
-                            Log.d("Name", "R" + display.getTeamName());
 
 
                             Bundle bundle = new Bundle();
@@ -128,10 +134,8 @@ public class MapFragment extends Fragment {
                             bundle.putString("location", display.getLocation());
                             bundle.putString("arena", display.getArena());
 
-
+                            //This method creates the popup dialog
                             CreateTeamInfo(display);
-
-
                             return false;
                         }
                     });
@@ -142,16 +146,17 @@ public class MapFragment extends Fragment {
             }
         });
 
-
+        //Button to Route Page
         toRoute = view.findViewById(R.id.journey);
         toRoute.setOnClickListener(view -> {
             GraphTraverse fragment = new GraphTraverse(getContext(),teamArrayList);
+            //Replace current fragment with a new one
             getParentFragmentManager().beginTransaction().replace(R.id.main,fragment).addToBackStack(null).commit();
         });
         return view;
     }
 
-
+    //Find specific NBATeam object from the clicked Marker
     private NBATeam findTeam(Marker marker) {
         for (NBATeam team : teamArrayList) {
             if (marker.getTitle().equals(team.getTeamName())) {
@@ -166,14 +171,17 @@ public class MapFragment extends Fragment {
     private void getCords() {
         CountDownLatch latch = new CountDownLatch(teamArrayList.size());
         for (NBATeam teamdetails : teamArrayList) {
+
+            //Get ONLY one result (most accurate address) from the given the teams' location
             geocoder.getFromLocationName(teamdetails.getLocation(), 1, new Geocoder.GeocodeListener() {
                 @Override
                 public void onGeocode(@NonNull List<Address> addresses) {
+                    //If an address exists
                     if (!addresses.isEmpty()) {
-                        Address address = addresses.get(0);
-                        Log.d("TEst", "HYD" + address);
-                        Log.d("TEST", "LT" + address.getLatitude());
+                        //Get the first addreess from the List
+                        Address address = addresses.get(0); //index 0 since there's only one result
 
+                        //Get the Latitude and Longitude and set it into the NBATeam object
                         LatLng cords = new LatLng(address.getLatitude(), address.getLongitude());
 
                         teamdetails.setCord(cords);
@@ -190,8 +198,7 @@ public class MapFragment extends Fragment {
         try {
             latch.await(); // Wait for all geocoding operations to complete
             // Continue with operations after all coordinates have been set
-            Log.d("GeocodeCompletion", "All geocoding tasks completed.");
-        } catch (InterruptedException e) {
+        } catch (InterruptedException e) { //If there's failure in the process
             e.printStackTrace();
         }
     }
@@ -201,12 +208,14 @@ public class MapFragment extends Fragment {
         return context.getResources().getIdentifier(resourceName, resourceType, context.getPackageName());
     }
 
-    //Method to convert resource ID into BitMap Image
+    //Method to create a BitmapDescriptor from a drawable resource for the Google Marker
     private static BitmapDescriptor bitmapDescriptor(Context context, int resid) {
-        Drawable drawable = ContextCompat.getDrawable(context, resid);
-        drawable.setBounds(0, 0, 175, 175);
+        Drawable drawable = ContextCompat.getDrawable(context, resid); //get Drawable from resource ID
+        drawable.setBounds(0, 0, 175, 175); //set size for the drawable
         Bitmap bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+        //ARGB_8888 means that the pixels are stored in 4 bytes, allowing transparency
 
+        //Draws drawable into canvas and , rendering it into bitmap
         Canvas canvas = new Canvas(bitmap);
         drawable.draw(canvas);
 
@@ -214,44 +223,53 @@ public class MapFragment extends Fragment {
     }
 
 
-    //Create a popup view for team details that can bring to the Route Page
+    //Create a popup view for team details
     public void CreateTeamInfo(NBATeam team) {
+        //Setting the popup view layout and attribute
         Dialog mDialog = new Dialog(getContext());
         mDialog.setContentView(R.layout.teampopupview);
         mDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+
+        //References to Layout Components
         ImageView pic = mDialog.findViewById(R.id.picture);
         TextView name = mDialog.findViewById(R.id.teamname);
         TextView loctext = mDialog.findViewById(R.id.location);
         TextView arenatext = mDialog.findViewById(R.id.arena);
 
 
+        //Set team logo picture from Resource id into the Imageview of this layour
         if (team.getResourceid() != 0) {
             pic.setImageResource(team.getResourceid());
         }
 
+        //Displaying teams's info by setting text to display
         name.setText("Team: " + team.getTeamName());
         loctext.setText("Location: " + team.getLocation());
         arenatext.setText("Arena: " + team.getArena());
 
+        //Show popup
         mDialog.show();
     }
 
+
+    //Get teams' details from the database
     private void loadTeam(){
+        //Node reference
         databaseReference = FirebaseDatabase.getInstance().getReference().child("team");
         databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@android.support.annotation.NonNull DataSnapshot dataSnapshot) {
-                teamArrayList.clear();
-                Log.d("FirebaseData", "DataSnapshot content: " + dataSnapshot.toString());
-
+                teamArrayList.clear(); //Clear to avoid duplication
+                //Get the children of the team node
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    Log.d("FirebaseData", "Snapshot: " + snapshot.toString());
 
+                    //Get the values of children
                     String arena = snapshot.child("Arena").getValue(String.class);
                     String codename = snapshot.child("Codename").getValue(String.class);
                     String location = snapshot.child("Location").getValue(String.class);
                     String teamname = snapshot.child("TeamName").getValue(String.class);
 
+                    //Instantiate new NBATeam and set values into it
                     NBATeam nbaTeam = new NBATeam();
                     nbaTeam.setArena(arena);
                     nbaTeam.setLocation(location);
@@ -260,7 +278,6 @@ public class MapFragment extends Fragment {
 
                     teamArrayList.add(nbaTeam);
                 }
-                Log.d("FirebaseData", "Number of teams added: " + teamArrayList.size());
             }
 
             @Override
